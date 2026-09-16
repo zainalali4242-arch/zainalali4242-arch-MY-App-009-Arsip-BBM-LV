@@ -1,7 +1,7 @@
 /* sw.js — cache luring.
    Naikkan nomor VERSI di bawah setiap kali index.html diperbarui,
    kalau tidak ponsel akan tetap memakai salinan lama. */
-var VERSI = 'bbm-v1.0.0';
+var VERSI = 'bbm-v1.1.0';
 var ASET = ['./', './index.html', './manifest.webmanifest'];
 
 self.addEventListener('install', function (e) {
