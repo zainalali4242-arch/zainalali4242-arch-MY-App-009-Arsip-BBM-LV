@@ -336,11 +336,11 @@ table.tb tr:last-child td { border-bottom: 0; }
   * { animation-duration: .001s !important; transition-duration: .001s !important; }
 }
 
-.sub-nav { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
+.sub-nav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
 .sub-nav button {
   background: var(--panel); border: 1px solid var(--garis2); color: var(--kabur);
   padding: 8px 13px; border-radius: 16px; font-size: 13px; font-weight: 600;
-  font-family: inherit; cursor: pointer; white-space: nowrap;
+  font-family: inherit; cursor: pointer; white-space: nowrap; flex: 0 1 auto;
 }
 .sub-nav button.aktif { background: var(--slab); border-color: var(--slab); color: #fff; }
 
@@ -406,14 +406,31 @@ table.tb tr:last-child td { border-bottom: 0; }
       </div>
     </div>
 
-    <div class="isian">
-      <label for="inNilai">Nilai <span class="wajib">*</span></label>
-      <input type="text" inputmode="numeric" id="inNilai" class="angka" placeholder="500000">
+    <div class="baris">
+      <div class="isian">
+        <label for="inNilai">Nilai <span class="wajib">*</span></label>
+        <input type="text" inputmode="numeric" id="inNilai" class="angka" placeholder="500000">
+      </div>
+      <div class="isian">
+        <label for="inJenisBbm">Jenis BBM</label>
+        <select id="inJenisBbm"><option value="">Pilih unit dulu</option></select>
+      </div>
+    </div>
+
+    <div class="baris">
+      <div class="isian">
+        <label for="inDept">Departemen</label>
+        <input type="text" id="inDept" placeholder="Produksi">
+      </div>
+      <div class="isian">
+        <label for="inLokasi">Lokasi</label>
+        <input type="text" id="inLokasi" placeholder="Kodal">
+      </div>
     </div>
 
     <div class="isian">
       <label for="inKet">Keterangan</label>
-      <input type="text" id="inKet" placeholder="Lokasi pengisian, catatan lain">
+      <input type="text" id="inKet" placeholder="Catatan lain">
     </div>
   </div>
 
@@ -492,8 +509,8 @@ table.tb tr:last-child td { border-bottom: 0; }
 <section class="laman" id="lmMaster">
   <div class="sub-nav">
     <button class="aktif" data-mst="unit">Unit</button>
-    <button data-mst="dana">Pemegang dana</button>
-    <button data-mst="saldo">Saldo &amp; top-up</button>
+    <button data-mst="dana">Dana</button>
+    <button data-mst="saldo">Saldo</button>
     <button data-mst="impor">Import</button>
   </div>
 
@@ -521,14 +538,26 @@ table.tb tr:last-child td { border-bottom: 0; }
       </div>
       <div class="baris">
         <div class="isian">
+          <label for="unBbm">Bahan bakar utama</label>
+          <select id="unBbm"><option value="Solar">Solar</option><option value="Bensin">Bensin</option></select>
+        </div>
+        <div class="isian">
+          <label for="unHolder">Pemegang dana saat ini</label>
+          <select id="unHolder"><option value="">Sama dengan ID unit</option></select>
+        </div>
+      </div>
+      <div class="baris">
+        <div class="isian">
           <label for="unMerek">Merek &amp; model</label>
           <input type="text" id="unMerek" placeholder="Toyota Hilux 4x4">
         </div>
         <div class="isian">
-          <label for="unDept">Departemen / driver</label>
-          <input type="text" id="unDept" placeholder="Mining / Budi">
+          <label for="unDept">Departemen default</label>
+          <input type="text" id="unDept" placeholder="Mining">
+          <span class="bantu">Otomatis mengisi form Input, bisa diganti tiap pengisian</span>
         </div>
       </div>
+      <div id="riwayatPemegang" style="font-size:12px;color:var(--samar);margin-bottom:10px"></div>
       <button class="tbl utama" id="tblSimpanUnit">Simpan unit</button>
     </div>
     <h2 class="judul">Daftar unit</h2>
@@ -585,8 +614,16 @@ table.tb tr:last-child td { border-bottom: 0; }
         <label for="tpKet">Keterangan top-up</label>
         <input type="text" id="tpKet" placeholder="Pengisian dana operasional">
       </div>
+      <div id="daftarFotoTopup"></div>
+      <div class="foto-tambah" style="padding:14px;margin-bottom:10px">
+        <input type="file" id="inFotoTopup" accept="image/*" multiple>
+        <b>Bukti transfer</b>
+        Screenshot atau foto struk transfer
+      </div>
       <button class="tbl utama" id="tblTopup">Catat top-up</button>
     </div>
+    <h2 class="judul">Riwayat top-up periode ini</h2>
+    <div class="kartu rapat" id="daftarTopup"></div>
     <h2 class="judul">Posisi dana periode ini</h2>
     <div class="kartu rapat" id="daftarSaldo"></div>
   </div>
@@ -739,7 +776,14 @@ table.tb tr:last-child td { border-bottom: 0; }
       <div class="isian"><label>KM</label><input type="text" inputmode="numeric" id="ubKm" class="angka"></div>
       <div class="isian"><label>QTY liter</label><input type="text" inputmode="decimal" id="ubQty" class="angka"></div>
     </div>
-    <div class="isian"><label>Nilai</label><input type="text" inputmode="numeric" id="ubNilai" class="angka"></div>
+    <div class="baris">
+      <div class="isian"><label>Nilai</label><input type="text" inputmode="numeric" id="ubNilai" class="angka"></div>
+      <div class="isian"><label>Jenis BBM</label><select id="ubJenisBbm"></select></div>
+    </div>
+    <div class="baris">
+      <div class="isian"><label>Departemen</label><input type="text" id="ubDept"></div>
+      <div class="isian"><label>Lokasi</label><input type="text" id="ubLokasi"></div>
+    </div>
     <div class="isian"><label>Keterangan</label><input type="text" id="ubKet"></div>
 
     <h2 class="judul">Foto</h2>
@@ -755,6 +799,25 @@ table.tb tr:last-child td { border-bottom: 0; }
       <button class="tbl bahaya" id="tblHapusTrx" style="flex:0 0 96px">Hapus</button>
       <button class="tbl utama" id="tblSimpanUbah">Simpan perubahan</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════ Lembar foto top-up ═══════════ -->
+<div class="lembar" id="lembarTopup">
+  <div class="lembar-isi">
+    <div class="lembar-kop">
+      <h3>Bukti transfer</h3>
+      <button class="lembar-tutup" data-tutup="lembarTopup">&times;</button>
+    </div>
+    <input type="hidden" id="tuId">
+    <div id="tuRingkas" style="font-size:13px;color:var(--kabur);margin-bottom:12px"></div>
+    <div id="tuDaftarFoto"></div>
+    <div class="foto-tambah" style="padding:14px;margin-top:8px">
+      <input type="file" id="tuFoto" accept="image/*" multiple>
+      <b>Tambah bukti</b>
+    </div>
+    <div style="height:14px"></div>
+    <button class="tbl bahaya" id="tblHapusTopup">Hapus catatan top-up ini</button>
   </div>
 </div>
 
@@ -1220,7 +1283,16 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       if (koma > titik) s = s.replace(/\./g, '').replace(',', '.');
       else s = s.replace(/,/g, '');
     } else if (koma > -1) {
-      s = s.replace(/\./g, '').replace(',', '.');
+      /* Satu koma saja itu ambigu: "30,67" adalah desimal liter (2 digit),
+         tapi "500,000" dari spreadsheet bergaya Amerika adalah pemisah ribuan
+         (persis 3 digit, tanpa sisa desimal). Hitung digit setelah koma
+         terakhir untuk membedakan keduanya. */
+      var digitSetelahKoma = s.slice(koma + 1).replace(/[^0-9]/g, '').length;
+      if (digitSetelahKoma === 3 && /^\d{1,3}(,\d{3})*$/.test(s)) {
+        s = s.replace(/,/g, '');
+      } else {
+        s = s.replace(/\./g, '').replace(',', '.');
+      }
     } else {
       /* hanya titik: anggap ribuan bila polanya 1.234.567 */
       if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
@@ -1306,10 +1378,15 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  var JENIS_BBM = {
+    Solar: ['B40', 'B50', 'Dexlite', 'Pertamina Dex'],
+    Bensin: ['Pertalite', 'Pertamax', 'Pertamax Turbo']
+  };
+
   function el(id) { return document.getElementById(id); }
 
   global.U = {
-    BULAN: BULAN, BULAN_S: BULAN_S,
+    BULAN: BULAN, BULAN_S: BULAN_S, JENIS_BBM: JENIS_BBM,
     parseNum: parseNum, fmtNum: fmtNum, fmtRp: fmtRp, fmtL: fmtL,
     fmtTgl: fmtTgl, fmtTglPendek: fmtTglPendek, fmtBulan: fmtBulan,
     hariIni: hariIni, bulanIni: bulanIni, bulanDari: bulanDari, stempel: stempel,
@@ -1531,17 +1608,20 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
   var Foto = {
     JENIS: JENIS,
 
-    /* Buat catatan foto dari File pilihan pengguna. Blob asli tidak disentuh. */
-    dariBerkas: function (file, fillId, bulan) {
+    /* Buat catatan foto dari File pilihan pengguna. Blob asli tidak disentuh.
+       refTipe membedakan foto nota pengisian dari bukti transfer top-up;
+       keduanya memakai store yang sama, refId diisi id pengisian atau id top-up. */
+    dariBerkas: function (file, refId, bulan, refTipe) {
       return muatGambar(file).then(function (img) {
         var r = keKanvas(img, THUMB_PX);
         return new Promise(function (res) {
           r.kanvas.toBlob(function (thumb) {
             res({
               id: U.uid('F'),
-              fillId: fillId || '',
+              fillId: refId || '',
+              refTipe: refTipe || 'pengisian',
               bulan: bulan || '',
-              jenis: 'Nota',
+              jenis: refTipe === 'topup' ? 'Bukti Transfer' : 'Nota',
               keterangan: '',
               nama: file.name || 'foto.jpg',
               mime: file.type || 'image/jpeg',
@@ -1598,12 +1678,18 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       return '';
     },
 
-    /* nama berkas di dalam ZIP arsip */
-    namaArsip: function (f, fill) {
+    /* nama berkas di dalam ZIP arsip. `ref` adalah objek fill (untuk foto
+       nota/kegiatan) atau objek topup (untuk bukti transfer), tergantung
+       f.refTipe. */
+    namaArsip: function (f, ref) {
       var ext = (f.mime || '').indexOf('png') > -1 ? 'png' :
                 (f.mime || '').indexOf('webp') > -1 ? 'webp' : 'jpg';
+      if (f.refTipe === 'topup') {
+        var tgl = ref ? ref.tgl : '0000-00-00';
+        return tgl + '_topup_' + f.id + '.' + ext;
+      }
       var jenis = (f.jenis || 'foto').toLowerCase().replace(/\s+/g, '-');
-      return (fill ? fill.tgl : '0000-00-00') + '_' + (fill ? fill.unitId : 'NA') +
+      return (ref ? ref.tgl : '0000-00-00') + '_' + (ref ? ref.unitId : 'NA') +
              '_' + f.id + '_' + jenis + '.' + ext;
     }
   };
@@ -1668,6 +1754,9 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     simpanUnit: function () {
       var id = U.normId(U.el('unId').value);
       if (!id) return App.pesan('ID unit belum diisi', true);
+      var lama = M.unit(id);
+      var holderBaru = U.normId(U.el('unHolder').value);
+
       var u = {
         id: id,
         tipe: U.el('unTipe').value,
@@ -1675,11 +1764,21 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         tangki: U.parseNum(U.el('unTangki').value),
         merek: U.el('unMerek').value.trim(),
         dept: U.el('unDept').value.trim(),
+        bbmUtama: U.el('unBbm').value,
+        holderAktif: holderBaru,
+        riwayatPemegang: lama ? (lama.riwayatPemegang || []) : [],
         aktif: true,
         createdAt: Date.now()
       };
-      var lama = M.unit(id);
-      if (lama) { u.createdAt = lama.createdAt; }
+      if (lama) {
+        u.createdAt = lama.createdAt;
+        if ((lama.holderAktif || '') !== holderBaru) {
+          u.riwayatPemegang.push({
+            holderId: holderBaru || id, dari: lama.holderAktif || id,
+            mulai: U.hariIni(), createdAt: Date.now()
+          });
+        }
+      }
 
       return DB.put('units', u).then(function () {
         /* pemegang dana dengan kode sama dibuat otomatis bila belum ada */
@@ -1688,10 +1787,17 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         }
       }).then(M.muat).then(function () {
         ['unId', 'unNo', 'unTangki', 'unMerek', 'unDept'].forEach(function (k) { U.el(k).value = ''; });
+        U.el('unHolder').value = '';
         M.render();
         App.segarkanPilihan();
         App.pesan(lama ? 'Unit ' + id + ' diperbarui' : 'Unit ' + id + ' ditambahkan');
       });
+    },
+
+    /* kode dana yang berlaku untuk unit ini saat ini */
+    holderUntuk: function (unitId) {
+      var u = M.unit(unitId);
+      return (u && u.holderAktif) || unitId;
     },
 
     hapusUnit: function (id) {
@@ -1709,9 +1815,19 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
     isiFormUnit: function (id) {
       var u = M.unit(id); if (!u) return;
+      Master.isiSelectHolder(U.el('unHolder'), 'Sama dengan ID unit');
       U.el('unId').value = u.id; U.el('unTipe').value = u.tipe;
       U.el('unNo').value = u.no || ''; U.el('unTangki').value = u.tangki || '';
       U.el('unMerek').value = u.merek || ''; U.el('unDept').value = u.dept || '';
+      U.el('unBbm').value = u.bbmUtama || 'Solar';
+      U.el('unHolder').value = u.holderAktif || '';
+
+      var riw = u.riwayatPemegang || [];
+      U.el('riwayatPemegang').innerHTML = riw.length
+        ? 'Riwayat pemegang: ' + riw.slice(-3).reverse().map(function (r) {
+            return U.esc(r.holderId) + ' sejak ' + U.fmtTgl(r.mulai);
+          }).join(' &middot; ')
+        : '';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
@@ -1766,18 +1882,98 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       if (!h || !b) return App.pesan('Dana dan periode wajib dipilih', true);
       if (nilai <= 0) return App.pesan('Jumlah top-up belum diisi', true);
       var id = M.kunciSaldo(h, b);
-      return DB.get('saldo', id).then(function (s) {
+      var topupId = U.uid('U');
+      var fotoAntre = M._fotoTopupBaru || [];
+
+      DB.get('saldo', id).then(function (s) {
         s = s || { id: id, holder: h, bulan: b, saldoAwal: 0, topups: [] };
         s.topups = s.topups || [];
         s.topups.push({
+          id: topupId,
           tgl: U.el('tpTgl').value || U.hariIni(),
           nilai: nilai,
           ket: U.el('tpKet').value.trim()
         });
         return DB.put('saldo', s);
       }).then(function () {
+        fotoAntre.forEach(function (f) { f.fillId = topupId; f.bulan = b; });
+        return fotoAntre.length ? DB.putBanyak('photos', fotoAntre) : null;
+      }).then(function () {
         U.el('tpNilai').value = ''; U.el('tpKet').value = '';
-        M.renderSaldo(); App.pesan('Top-up ' + U.fmtRp(nilai) + ' dicatat');
+        M._fotoTopupBaru = [];
+        M.renderFotoTopupBaru();
+        M.renderSaldo();
+        App.pesan('Top-up ' + U.fmtRp(nilai) + ' dicatat' +
+          (fotoAntre.length ? ' dengan ' + fotoAntre.length + ' bukti' : ''));
+      });
+    },
+
+    /* ── foto bukti transfer: antrean sebelum top-up disimpan ── */
+    _fotoTopupBaru: [],
+    tambahFotoTopupBaru: function (files) {
+      if (!files || !files.length) return;
+      var tugas = [];
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].type.indexOf('image/') === 0) tugas.push(Foto.dariBerkas(files[i], '', '', 'topup'));
+      }
+      if (!tugas.length) return;
+      Promise.all(tugas).then(function (hasil) {
+        M._fotoTopupBaru = (M._fotoTopupBaru || []).concat(hasil);
+        M.renderFotoTopupBaru();
+      });
+    },
+    renderFotoTopupBaru: function () {
+      var w = U.el('daftarFotoTopup');
+      var f = M._fotoTopupBaru || [];
+      w.innerHTML = f.map(function (x, i) {
+        return '<div class="foto-item"><img src="' + Foto.url(x.thumb) + '" alt="">' +
+          '<div class="fmeta" style="display:flex;align-items:center;justify-content:space-between">' +
+          '<span style="font-size:12px;color:var(--kabur)">' + U.ukuran(x.size) + '</span>' +
+          '<button class="foto-hapus" data-tphapus="' + i + '">Hapus</button></div></div>';
+      }).join('');
+      w.querySelectorAll('[data-tphapus]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          M._fotoTopupBaru.splice(+b.dataset.tphapus, 1);
+          M.renderFotoTopupBaru();
+        });
+      });
+    },
+
+    /* ── lembar riwayat top-up (lihat/tambah bukti, hapus) ── */
+    bukaTopup: function (holder, bulan, topupId) {
+      DB.get('saldo', M.kunciSaldo(holder, bulan)).then(function (s) {
+        var t = (s.topups || []).find(function (x) { return x.id === topupId; });
+        if (!t) return;
+        U.el('tuId').value = topupId;
+        U.el('tuRingkas').textContent = U.fmtTgl(t.tgl) + ' · ' + U.fmtRp(t.nilai) + (t.ket ? ' · ' + t.ket : '');
+        return Foto.milik(topupId).then(function (fs) {
+          M._fotoTopupLihat = fs;
+          M.renderFotoTopupLihat();
+          App.bukaLembar('lembarTopup');
+        });
+      });
+    },
+    renderFotoTopupLihat: function () {
+      var w = U.el('tuDaftarFoto');
+      var f = M._fotoTopupLihat || [];
+      if (!f.length) { w.innerHTML = '<div style="font-size:13px;color:var(--samar)">Belum ada bukti</div>'; return; }
+      w.innerHTML = f.map(function (x, i) {
+        return '<div class="foto-item"><img src="' + Foto.url(x.thumb) + '" alt="" data-tulihat="' + i + '">' +
+          '<div class="fmeta" style="display:flex;align-items:center;justify-content:space-between">' +
+          '<span style="font-size:12px;color:var(--kabur)">' + U.ukuran(x.size) + '</span>' +
+          '<button class="foto-hapus" data-tuhapus="' + i + '">Hapus</button></div></div>';
+      }).join('');
+      w.querySelectorAll('[data-tulihat]').forEach(function (img) {
+        img.addEventListener('click', function () {
+          var f = M._fotoTopupLihat[+img.dataset.tulihat];
+          App.lihatFoto(Foto.url(f.blob), 'Bukti transfer');
+        });
+      });
+      w.querySelectorAll('[data-tuhapus]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var f = M._fotoTopupLihat.splice(+b.dataset.tuhapus, 1)[0];
+          DB.hapus('photos', f.id).then(M.renderFotoTopupLihat);
+        });
       });
     },
 
@@ -1823,6 +2019,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     renderSaldo: function () {
       var bulan = U.el('sdBulan').value || U.bulanIni();
       var wadah = U.el('daftarSaldo');
+      M.renderTopup();
       Promise.all([DB.cariIndex('saldo', 'bulan', bulan), DB.cariIndex('fills', 'bulan', bulan)])
         .then(function (r) {
           var saldos = r[0], fills = r[1].filter(function (f) { return !f.deleted; });
@@ -1858,6 +2055,47 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
               '<div class="ukur"><i class="' + kls + '" style="width:' + pct + '%"></i></div></div>';
           }).join('');
         });
+    },
+
+    renderTopup: function () {
+      var h = U.el('sdDana').value, b = U.el('sdBulan').value;
+      var w = U.el('daftarTopup');
+      if (!h || !b) { w.innerHTML = '<div class="kosong">Pilih dana dan periode</div>'; return Promise.resolve(); }
+      return DB.get('saldo', M.kunciSaldo(h, b)).then(function (s) {
+        var tp = (s && s.topups) || [];
+        if (!tp.length) { w.innerHTML = '<div class="kosong">Belum ada top-up periode ini</div>'; return; }
+        return DB.semua('photos').then(function (fotos) {
+          var jml = {};
+          fotos.forEach(function (p) { if (p.refTipe === 'topup') jml[p.fillId] = (jml[p.fillId] || 0) + 1; });
+          w.innerHTML = tp.slice().reverse().map(function (t) {
+            var n = jml[t.id] || 0;
+            return '<div class="trx" data-topup="' + t.id + '">' +
+              '<div class="isi"><div class="atas"><span class="unit">' + U.fmtRp(t.nilai) + '</span>' +
+              (n ? '<span class="tag ok">' + n + ' bukti</span>' : '<span class="tag awas">tanpa bukti</span>') + '</div>' +
+              '<div class="bwh">' + U.fmtTgl(t.tgl) + (t.ket ? ' \u00B7 ' + U.esc(t.ket) : '') + '</div></div></div>';
+          }).join('');
+          w.querySelectorAll('[data-topup]').forEach(function (r) {
+            r.addEventListener('click', function () { M.bukaTopup(h, b, r.dataset.topup); });
+          });
+        });
+      });
+    },
+
+    hapusTopup: function () {
+      var h = U.el('sdDana').value, b = U.el('sdBulan').value, id = U.el('tuId').value;
+      if (!confirm('Hapus catatan top-up ini beserta buktinya?')) return;
+      Foto.milik(id).then(function (fs) {
+        return Promise.all(fs.map(function (f) { return DB.hapus('photos', f.id); }));
+      }).then(function () {
+        return DB.get('saldo', M.kunciSaldo(h, b));
+      }).then(function (s) {
+        s.topups = (s.topups || []).filter(function (t) { return t.id !== id; });
+        return DB.put('saldo', s);
+      }).then(function () {
+        App.tutupLembar('lembarTopup');
+        M.renderSaldo();
+        App.pesan('Top-up dihapus');
+      });
     }
   };
 
@@ -1892,11 +2130,23 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
     gantiUnit: function () {
       var id = U.el('inUnit').value;
-      var selDana = U.el('inDana');
-      /* pemegang dana mengikuti unit, kecuali pengguna sudah memilih sendiri */
-      if (id && Master.holder(id)) selDana.value = id;
+      var u = Master.unit(id);
+      /* pemegang dana mengikuti pemegang aktif unit, kecuali pengguna sudah memilih sendiri */
+      if (id) U.el('inDana').value = Master.holderUntuk(id);
+      if (u && !U.el('inDept').value) U.el('inDept').value = u.dept || '';
+      In.isiJenisBbm(u ? u.bbmUtama : '');
       In.tampilKmTerakhir(id);
       In.hitung();
+    },
+
+    isiJenisBbm: function (bbmUtama) {
+      var sel = U.el('inJenisBbm');
+      var opsi = U.JENIS_BBM[bbmUtama] || [];
+      var lama = sel.value;
+      sel.innerHTML = opsi.length
+        ? opsi.map(function (o) { return '<option value="' + o + '">' + o + '</option>'; }).join('')
+        : '<option value="">Pilih unit dulu</option>';
+      if (opsi.indexOf(lama) > -1) sel.value = lama;
     },
 
     tampilKmTerakhir: function (unitId) {
@@ -1995,6 +2245,9 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         km: U.parseNum(U.el('inKm').value),
         qty: U.parseNum(U.el('inQty').value),
         nilai: U.parseNum(U.el('inNilai').value),
+        jenisBbm: U.el('inJenisBbm').value,
+        dept: U.el('inDept').value.trim(),
+        lokasi: U.el('inLokasi').value.trim(),
         ket: U.el('inKet').value.trim()
       };
       var salah = [];
@@ -2028,6 +2281,9 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         qty: d.qty,
         nilai: d.nilai,
         hargaL: d.qty > 0 ? d.nilai / d.qty : 0,
+        jenisBbm: d.jenisBbm,
+        dept: d.dept,
+        lokasi: d.lokasi,
         ket: d.ket,
         deleted: false,
         createdAt: Date.now(),
@@ -2056,12 +2312,13 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     bersihkan: function (pertahankanTanggal) {
       fotoBaru = [];
       In.renderFoto();
-      ['inKm', 'inQty', 'inNilai', 'inKet'].forEach(function (id) {
+      ['inKm', 'inQty', 'inNilai', 'inKet', 'inDept', 'inLokasi'].forEach(function (id) {
         U.el(id).value = ''; U.el(id).classList.remove('salah');
       });
       if (!pertahankanTanggal) {
         U.el('inTgl').value = U.hariIni();
         U.el('inUnit').value = ''; U.el('inDana').value = '';
+        In.isiJenisBbm('');
         In._kmLalu = null; U.el('kmSebelum').textContent = '';
       } else {
         In.tampilKmTerakhir(U.el('inUnit').value);
@@ -2134,6 +2391,8 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
               (nf ? '' : '<span class="tag awas">tanpa foto</span>') + '</div>' +
               '<div class="bwh">' + U.fmtNum(x.hargaL, 0) + ' Rp/L' +
               (x.km ? ' · ' + U.fmtNum(x.km, 0) + ' km' : '') +
+              (x.jenisBbm ? ' · ' + U.esc(x.jenisBbm) : '') +
+              (x.lokasi ? ' · ' + U.esc(x.lokasi) : '') +
               (nf ? ' · ' + nf + ' foto' : '') + '</div></div>' +
               '<div class="kanan"><div class="rp">' + U.fmtRp(x.nilai) + '</div>' +
               '<div class="l">' + U.fmtNum(x.qty, 2) + ' L</div></div></div>';
@@ -2151,6 +2410,11 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         if (!f) return;
         Master.isiSelectUnit(U.el('ubUnit'));
         Master.isiSelectHolder(U.el('ubDana'));
+        var u = Master.unit(f.unitId);
+        var opsi = U.JENIS_BBM[u ? u.bbmUtama : ''] || [];
+        U.el('ubJenisBbm').innerHTML = opsi.map(function (o) {
+          return '<option value="' + o + '">' + o + '</option>';
+        }).join('') || '<option value="">-</option>';
         U.el('ubId').value = f.id;
         U.el('ubTgl').value = f.tgl;
         U.el('ubUnit').value = f.unitId;
@@ -2158,6 +2422,9 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         U.el('ubKm').value = f.km || '';
         U.el('ubQty').value = U.fmtNum(f.qty, 2);
         U.el('ubNilai').value = f.nilai || '';
+        U.el('ubJenisBbm').value = f.jenisBbm || '';
+        U.el('ubDept').value = f.dept || '';
+        U.el('ubLokasi').value = f.lokasi || '';
         U.el('ubKet').value = f.ket || '';
         fotoUbahBaru = [];
         return Foto.milik(id).then(function (fs) {
@@ -2253,6 +2520,9 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         f.km = U.parseNum(U.el('ubKm').value);
         f.qty = qty; f.nilai = nilai;
         f.hargaL = nilai / qty;
+        f.jenisBbm = U.el('ubJenisBbm').value;
+        f.dept = U.el('ubDept').value.trim();
+        f.lokasi = U.el('ubLokasi').value.trim();
         f.ket = U.el('ubKet').value.trim();
         f.updatedAt = Date.now();
         return DB.put('fills', f).then(function () { return f; });
@@ -2493,11 +2763,17 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
     return Promise.all([
       Master.posisiDana(g.holder, g.bulan),
-      DB.semua('config')
+      DB.semua('config'),
+      DB.cariIndex('photos', 'bulan', g.bulan)
     ]).then(function (r) {
       var dana = r[0];
       var cfg = {};
       r[1].forEach(function (c) { cfg[c.key] = c.value; });
+
+      var idTopup = {};
+      (dana.topups || []).forEach(function (t) { idTopup[t.id] = t; });
+      var fotoTopup = r[2].filter(function (p) { return p.refTipe === 'topup' && idTopup[p.fillId]; })
+        .map(function (p) { return { foto: p, topup: idTopup[p.fillId] }; });
 
       var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
       var unit = Master.unit(g.unitId) || {};
@@ -2505,13 +2781,16 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
       var y = kepala(doc, g, cfg, unit, namaHolder);
       y = ringkasan(doc, g, y);
-      y = rekonsiliasi(doc, g, dana, y);
+      y = rekonsiliasi(doc, g, dana, y, fotoTopup);
       y = rincian(doc, g, y);
       y = tandaTangan(doc, cfg, y);
 
       var tugas = Promise.resolve();
+      if (fotoTopup.length) {
+        tugas = tugas.then(function () { return lampiranTopup(doc, g, fotoTopup, cfg); });
+      }
       if (layout && TATA[layout] && g.fotos.length) {
-        tugas = lampiran(doc, g, TATA[layout], cfg);
+        tugas = tugas.then(function () { return lampiran(doc, g, TATA[layout], cfg); });
       }
 
       return tugas.then(function () {
@@ -2599,7 +2878,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
   }
 
   /* ─────────── rekonsiliasi dana ─────────── */
-  function rekonsiliasi(doc, g, dana, y) {
+  function rekonsiliasi(doc, g, dana, y, fotoTopup) {
     var tersedia = dana.saldoAwal + dana.topup;
     var sisa = tersedia - g.totalNilai;
 
@@ -2608,9 +2887,20 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     txt(doc, 'Rekonsiliasi dana', MG, y);
     y += 3;
 
+    var refTopup = {};
+    (fotoTopup || []).forEach(function (x, i) {
+      var kode = 'TU-' + String(i + 1).padStart(3, '0');
+      (refTopup[x.topup.id] = refTopup[x.topup.id] || []).push(kode);
+    });
+    var barisTopup = (dana.topups || []).length
+      ? 'Penambahan dana (' + dana.topups.length + 'x)' +
+        ((fotoTopup || []).length ? ' \u2014 bukti: ' +
+          Object.keys(refTopup).map(function (k) { return refTopup[k].join(','); }).join(', ') : '')
+      : 'Penambahan dana (0x)';
+
     var baris = [
       ['Saldo awal periode', U.fmtRp(dana.saldoAwal)],
-      ['Penambahan dana (' + dana.topups.length + 'x)', U.fmtRp(dana.topup)],
+      [barisTopup, U.fmtRp(dana.topup)],
       ['Dana tersedia', U.fmtRp(tersedia)],
       ['Realisasi pembelian BBM', '(' + U.fmtRp(g.totalNilai) + ')'],
       ['Saldo akhir', U.fmtRp(sisa)]
@@ -2722,6 +3012,66 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       txt(doc, k[1] || '(  .  .  .  )', x + w / 2, y + 27, { align: 'center' });
     });
     return y + 34;
+  }
+
+  /* ─────────── lampiran bukti top-up ─────────── */
+  function lampiranTopup(doc, g, fotoTopup, cfg) {
+    var tata = { kol: 2, bar: 2, tinggiGbr: 90, tinggiKet: 16, px: 1000 };
+    var perHal = tata.kol * tata.bar;
+    var lebarSel = (ISI - (tata.kol - 1) * 6) / tata.kol;
+
+    var antre = Promise.resolve();
+    fotoTopup.forEach(function (x, i) {
+      antre = antre.then(function () {
+        var posisi = i % perHal;
+        if (posisi === 0) {
+          doc.addPage();
+          doc.setFillColor.apply(doc, WARNA.terang);
+          doc.rect(0, 0, LEBAR, 24, 'F');
+          doc.setDrawColor.apply(doc, WARNA.garis);
+          doc.line(0, 24, LEBAR, 24);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+          doc.setTextColor.apply(doc, WARNA.tinta);
+          txt(doc, 'Bukti transfer dana', MG, 12);
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+          doc.setTextColor.apply(doc, WARNA.kabur);
+          txt(doc, 'Dana ' + g.holder + '  |  ' + U.fmtBulan(g.bulan), MG, 18);
+        }
+        var kode = 'TU-' + String(i + 1).padStart(3, '0');
+        var kol = posisi % tata.kol, bar = Math.floor(posisi / tata.kol);
+        var x0 = MG + kol * (lebarSel + 6);
+        var y0 = 34 + bar * (tata.tinggiGbr + tata.tinggiKet + 5);
+
+        doc.setDrawColor.apply(doc, WARNA.garis);
+        doc.setFillColor(252, 252, 251);
+        doc.rect(x0, y0, lebarSel, tata.tinggiGbr, 'FD');
+
+        var lanjut = Foto.adaBlob(x.foto)
+          ? Foto.untukCetak(x.foto.blob, tata.px).then(function (img) {
+              var skala = Math.min((lebarSel - 4) / img.w, (tata.tinggiGbr - 4) / img.h);
+              var w = img.w * skala, h = img.h * skala;
+              doc.addImage(img.data, 'JPEG',
+                x0 + (lebarSel - w) / 2, y0 + (tata.tinggiGbr - h) / 2, w, h, undefined, 'FAST');
+            })
+          : Promise.resolve().then(function () {
+              doc.setFontSize(8); doc.setTextColor.apply(doc, WARNA.samar);
+              txt(doc, 'Foto sudah diarsipkan', x0 + lebarSel / 2, y0 + tata.tinggiGbr / 2, { align: 'center' });
+            });
+
+        return lanjut.then(function () {
+          var ky = y0 + tata.tinggiGbr + 4.5;
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+          doc.setTextColor.apply(doc, WARNA.tinta);
+          txt(doc, kode + '   ' + U.fmtTgl(x.topup.tgl) + '   ' + U.fmtRp(x.topup.nilai), x0, ky);
+          if (x.topup.ket) {
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+            doc.setTextColor.apply(doc, WARNA.kabur);
+            txt(doc, x.topup.ket, x0, ky + 4);
+          }
+        });
+      });
+    });
+    return antre;
   }
 
   /* ─────────── lampiran foto ─────────── */
@@ -2920,13 +3270,16 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       tombol.disabled = true;
       tombol.innerHTML = '<span class="spin"></span> Menyiapkan';
 
-      var fotos, fills = {};
+      var fotos, fills = {}, topups = {};
       DB.cariIndex('photos', 'bulan', bulan).then(function (f) {
         fotos = f.filter(function (x) { return x.status !== 'KOSONG' && x.blob; });
         if (!fotos.length) throw new Error('Tidak ada foto yang bisa diarsipkan di periode ini');
         return DB.cariIndex('fills', 'bulan', bulan);
       }).then(function (fl) {
         fl.forEach(function (f) { fills[f.id] = f; });
+        return DB.cariIndex('saldo', 'bulan', bulan);
+      }).then(function (sl) {
+        sl.forEach(function (s) { (s.topups || []).forEach(function (t) { topups[t.id] = t; }); });
 
         var zip = new JSZip();
         var folder = zip.folder('foto');
@@ -2934,14 +3287,16 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         var total = 0;
 
         fotos.forEach(function (f, i) {
-          var fill = fills[f.fillId];
-          var nama = Foto.namaArsip(f, fill);
+          var ref = f.refTipe === 'topup' ? topups[f.fillId] : fills[f.fillId];
+          var nama = Foto.namaArsip(f, ref);
           folder.file(nama, f.blob);
           total += f.size || 0;
           daftar.push({
-            fotoId: f.id, berkas: nama, fillId: f.fillId,
-            unitId: fill ? fill.unitId : '', holder: fill ? fill.holder : '',
-            tgl: fill ? fill.tgl : '', qty: fill ? fill.qty : 0, nilai: fill ? fill.nilai : 0,
+            fotoId: f.id, berkas: nama, fillId: f.fillId, refTipe: f.refTipe || 'pengisian',
+            unitId: ref && f.refTipe !== 'topup' ? ref.unitId : '',
+            holder: ref && f.refTipe !== 'topup' ? ref.holder : '',
+            tgl: ref ? ref.tgl : '', qty: ref && f.refTipe !== 'topup' ? ref.qty : 0,
+            nilai: ref ? ref.nilai : 0,
             jenis: f.jenis, keterangan: f.keterangan,
             mime: f.mime, size: f.size, lebar: f.lebar, tinggi: f.tinggi
           });
@@ -3054,12 +3409,17 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
         var petaFill = {};
         isi.fills.forEach(function (f) { petaFill[f.id] = f; });
+        var petaTopup = {};
+        (isi.saldo || []).forEach(function (s) { (s.topups || []).forEach(function (t) { petaTopup[t.id] = t; }); });
 
         if (denganFoto) {
           var folder = zip.folder('foto');
           var n = 0;
           fotos.forEach(function (f) {
-            if (f.blob) { folder.file(Foto.namaArsip(f, petaFill[f.fillId]), f.blob); n++; }
+            if (f.blob) {
+              var ref = f.refTipe === 'topup' ? petaTopup[f.fillId] : petaFill[f.fillId];
+              folder.file(Foto.namaArsip(f, ref), f.blob); n++;
+            }
           });
           zip.file('BACA-DULU.txt',
             'Cadangan penuh Monitoring BBM\r\nDibuat: ' + U.stempel() +
@@ -3144,15 +3504,18 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           var fotos = d.photos || [];
           var petaFill = {};
           (d.fills || []).forEach(function (f) { petaFill[f.id] = f; });
+          var petaTopup = {};
+          (d.saldo || []).forEach(function (s) { (s.topups || []).forEach(function (t) { petaTopup[t.id] = t; }); });
 
           return Promise.all(fotos.map(function (f) {
             f.blob = null;
-            var nama = Foto.namaArsip(f, petaFill[f.fillId]);
+            var ref = f.refTipe === 'topup' ? petaTopup[f.fillId] : petaFill[f.fillId];
+            var nama = Foto.namaArsip(f, ref);
             var berkas = zip.file('foto/' + nama);
             if (!berkas) { if (f.status !== 'KOSONG') f.status = 'KOSONG'; return Promise.resolve(f); }
             return berkas.async('blob').then(function (b) {
               f.blob = new Blob([b], { type: f.mime || 'image/jpeg' });
-              return Foto.dariBerkas(f.blob, f.fillId, f.bulan).then(function (baru) {
+              return Foto.dariBerkas(f.blob, f.fillId, f.bulan, f.refTipe).then(function (baru) {
                 f.thumb = baru.thumb;
                 return f;
               });
@@ -3186,24 +3549,32 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
   var ALIAS = {
     tgl:   ['tanggal', 'tgl', 'date', 'tanggalpengisian'],
     unit:  ['id', 'idunit', 'unit', 'unitno', 'nounit', 'nomorunit', 'kodeunit', 'nolambung'],
-    dana:  ['dana', 'sumberdana', 'kodedana', 'pemegangdana', 'pemegang'],
-    dana2: ['holder', 'holderbbm', 'holderbbmlv', 'holderbbmlt'],
+    dana:  ['dana', 'sumberdana', 'kodedana', 'pemegangdana'],
+    dana2: ['holderbbm', 'holderbbmlv', 'holderbbmlt'],
     km:    ['km', 'odometer', 'odo', 'kilometer', 'kmakhir', 'odometerkm', 'kmodometer'],
     qty:   ['qty', 'qtyl', 'volume', 'volumel', 'liter', 'vol', 'jumlahliter'],
     nilai: ['nilai', 'nilairp', 'totalharga', 'totalhargarp', 'total', 'totalbiaya', 'rupiah', 'biaya'],
-    ket:   ['keterangan', 'ket', 'catatan', 'lokasi'],
+    ket:   ['keterangan', 'ket', 'catatan'],
+    dept:  ['departemen', 'departement', 'dept', 'divisi'],
+    lokasi: ['lokasi', 'site', 'area', 'tempat'],
+    jenisBbm: ['jenisbbm', 'produkbbm', 'jenisbahanbakar', 'bbm'],
+    /* nama orang; dicocokkan ke Master Dana berdasar nama, bukan kode */
+    operator: ['user', 'operator', 'namaoperator', 'diinputoleh', 'penginput'],
+    pemegang: ['holder', 'pemegang', 'pic', 'namapemegangunit'],
     /* khusus lembar master */
     tipe:  ['tipe', 'jenis', 'kategori'],
     nopol: ['nomorpolisi', 'nopol', 'platnomor', 'plat', 'nomorkendaraan'],
     merek: ['merek', 'merk', 'model', 'merekmodel', 'tipekendaraan'],
-    dept:  ['departemen', 'dept', 'divisi', 'driver', 'pengemudi', 'departemendriver'],
+    bbmUtama: ['tipebahanbakar', 'bahanbakarutama', 'bahanbakar'],
     nama:  ['namapemegang', 'nama', 'namaholder', 'pemiliksaldo']
   };
 
   var LABEL = {
     tgl: 'Tanggal', unit: 'ID unit', dana: 'Dana', dana2: 'Dana (cadangan)',
     km: 'KM', qty: 'QTY liter', nilai: 'Nilai', ket: 'Keterangan',
-    tipe: 'Tipe', nopol: 'Nomor polisi', merek: 'Merek', dept: 'Departemen', nama: 'Nama pemegang'
+    dept: 'Departemen', lokasi: 'Lokasi', jenisBbm: 'Jenis BBM',
+    operator: 'Operator (\u2192 dana)', pemegang: 'Pemegang unit (\u2192 dana)',
+    tipe: 'Tipe', nopol: 'Nomor polisi', merek: 'Merek', bbmUtama: 'Bahan bakar utama', nama: 'Nama pemegang'
   };
 
   var KOLOM_TRX = ['tgl', 'unit', 'dana', 'dana2', 'km', 'qty', 'nilai', 'ket'];
@@ -3352,7 +3723,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
       var p = terbaik.peta;
       var jenis = (p.tgl !== undefined && p.qty !== undefined) ? 'pengisian'
-                : (p.unit !== undefined && (p.tipe !== undefined || p.nopol !== undefined || p.merek !== undefined)) ? 'unit'
+                : (p.unit !== undefined && (p.tipe !== undefined || p.nopol !== undefined || p.merek !== undefined || p.bbmUtama !== undefined)) ? 'unit'
                 : ((p.dana !== undefined || p.dana2 !== undefined) && p.nama !== undefined) ? 'dana'
                 : null;
       if (!jenis) return null;
@@ -3385,10 +3756,16 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           /* aplikasi lama menulis "(sama dengan holder)" bila dana = holder */
           var dana = kunci(danaMentah).indexOf('samadengan') > -1 ? '' : U.normId(danaMentah);
           var dana2 = U.normId(teks(ambil(row, 'dana2')));
+          var operatorNama = teks(ambil(row, 'operator'));
           var qty = baca_angka(ambil(row, 'qty'));
           var nilai = baca_angka(ambil(row, 'nilai'));
 
-          if (!dana) dana = dana2 || unit;
+          /* Tidak ada kode dana sama sekali → coba cocokkan nama operator ke
+             Master Dana (operator dianggap pemegang dana). Kalau tidak ada
+             nama atau tidak cocok, jalankan() akan memakai ID unit sebagai
+             cadangan terakhir. */
+          var holderBelumPasti = !dana && !dana2;
+          if (!dana) dana = dana2 || (holderBelumPasti && operatorNama ? '' : unit);
 
           /* Baris tanpa satu pun kolom kunci bukan data yang rusak, melainkan
              catatan kaki atau baris pemisah. Dilewati diam-diam. */
@@ -3403,22 +3780,28 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           if (salah.length) { tolak.push({ baris: noBaris, sebab: salah.join(', ') }); return; }
           sah.push({
             baris: noBaris, tgl: tgl, unitId: unit, holder: dana,
+            operatorNama: holderBelumPasti ? operatorNama : '',
             km: baca_angka(ambil(row, 'km')), qty: qty, nilai: nilai,
+            dept: teks(ambil(row, 'dept')), lokasi: teks(ambil(row, 'lokasi')),
+            jenisBbm: teks(ambil(row, 'jenisBbm')),
             ket: teks(ambil(row, 'ket'))
           });
 
         } else if (L.jenis === 'unit') {
           var id = U.normId(teks(ambil(row, 'unit')));
-          var adaIsiLain = ['tipe', 'nopol', 'merek', 'dept'].some(function (b) {
+          var adaIsiLain = ['tipe', 'nopol', 'merek', 'dept', 'bbmUtama', 'pemegang'].some(function (b) {
             return teks(ambil(row, b)) !== '';
           });
           if (!id && !adaIsiLain) return;                    /* baris catatan */
           if (!id) { tolak.push({ baris: noBaris, sebab: 'ID unit kosong' }); return; }
           var tipe = teks(ambil(row, 'tipe')).toUpperCase();
           if (['LV', 'LT', 'LAIN'].indexOf(tipe) < 0) tipe = U.tebakTipe(id);
+          var bbmU = teks(ambil(row, 'bbmUtama'));
+          bbmU = /bensin|pertalite|pertamax/i.test(bbmU) ? 'Bensin' : 'Solar';
           sah.push({
             baris: noBaris, id: id, tipe: tipe, no: teks(ambil(row, 'nopol')),
-            merek: teks(ambil(row, 'merek')), dept: teks(ambil(row, 'dept'))
+            merek: teks(ambil(row, 'merek')), dept: teks(ambil(row, 'dept')),
+            bbmUtama: bbmU, pemegangNama: teks(ambil(row, 'pemegang'))
           });
 
         } else {
@@ -3513,36 +3896,80 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
       var unitBaru = {}, danaBaru = {}, fills = [], jmlLewat = 0;
 
+      /* peta nama -> kode dana, dipakai untuk mencocokkan kolom "User" dan
+         "Holder" yang berisi nama orang, bukan kode. Diisi dari data yang
+         sudah ada, lalu bertambah dari lembar Dana yang diimport. */
+      var namaKeKode = {};
+      Master.holders.forEach(function (h) {
+        if (h.nama) namaKeKode[kunci(h.nama)] = h.id;
+      });
+      function cariAtauBuatKode(nama, idCadangan) {
+        var k = kunci(nama);
+        if (!k) return idCadangan;
+        if (namaKeKode[k]) return namaKeKode[k];
+        /* nama belum dikenal → buat pemegang dana baru, kodenya memakai
+           ID unit sebagai cadangan terakhir supaya tidak tabrakan */
+        if (!Master.holder(idCadangan) && !danaBaru[idCadangan]) {
+          danaBaru[idCadangan] = { id: idCadangan, nama: nama, aktif: true, createdAt: Date.now() };
+        } else if (danaBaru[idCadangan] && !danaBaru[idCadangan].nama) {
+          danaBaru[idCadangan].nama = nama;
+        }
+        namaKeKode[k] = idCadangan;
+        return idCadangan;
+      }
+
+      /* urutan wajib: Dana dulu (isi peta nama), lalu Unit (boleh pakai
+         peta nama untuk Holder), baru Pengisian (boleh pakai peta nama
+         untuk kolom User, dan sudah tahu pemegang aktif tiap unit) */
+      var urutan = { dana: 0, unit: 1, pengisian: 2 };
+      dipakai = dipakai.slice().sort(function (a, b) { return urutan[a.jenis] - urutan[b.jenis]; });
+
       dipakai.forEach(function (L) {
-        if (L.jenis === 'unit') {
-          L.hasil.sah.forEach(function (r) {
-            unitBaru[r.id] = { id: r.id, tipe: r.tipe, no: r.no, merek: r.merek,
-                               dept: r.dept, tangki: 0, aktif: true, createdAt: Date.now() };
-          });
-        } else if (L.jenis === 'dana') {
+        if (L.jenis === 'dana') {
           L.hasil.sah.forEach(function (r) {
             danaBaru[r.id] = { id: r.id, nama: r.nama, aktif: true, createdAt: Date.now() };
+            if (r.nama) namaKeKode[kunci(r.nama)] = r.id;
           });
+
+        } else if (L.jenis === 'unit') {
+          L.hasil.sah.forEach(function (r) {
+            var holderAktif = r.pemegangNama ? cariAtauBuatKode(r.pemegangNama, r.id) : '';
+            unitBaru[r.id] = {
+              id: r.id, tipe: r.tipe, no: r.no, merek: r.merek, dept: r.dept,
+              bbmUtama: r.bbmUtama || 'Solar', holderAktif: holderAktif,
+              riwayatPemegang: [], tangki: 0, aktif: true, createdAt: Date.now()
+            };
+          });
+
         } else {
           L.hasil.sah.forEach(function (r) {
             if (r._dobel) { jmlLewat++; return; }
+            var holder = r.holder;
+            if (!holder && r.operatorNama) {
+              holder = cariAtauBuatKode(r.operatorNama, r.unitId);
+            }
+            if (!holder) holder = (unitBaru[r.unitId] && unitBaru[r.unitId].holderAktif) ||
+                                   Master.holderUntuk(r.unitId) || r.unitId;
+
             var bulan = U.bulanDari(r.tgl);
             fills.push({
               id: U.uid('T'), tgl: r.tgl, bulan: bulan,
-              unitId: r.unitId, holder: r.holder,
-              grup: r.holder + '|' + r.unitId + '|' + bulan,
+              unitId: r.unitId, holder: holder,
+              grup: holder + '|' + r.unitId + '|' + bulan,
               km: r.km, qty: r.qty, nilai: r.nilai,
               hargaL: r.qty > 0 ? r.nilai / r.qty : 0,
+              jenisBbm: r.jenisBbm, dept: r.dept, lokasi: r.lokasi,
               ket: r.ket, sumber: 'impor', deleted: false,
               createdAt: Date.now(), updatedAt: Date.now()
             });
             /* unit & dana yang belum terdaftar dibuatkan otomatis */
             if (!Master.unit(r.unitId) && !unitBaru[r.unitId]) {
               unitBaru[r.unitId] = { id: r.unitId, tipe: U.tebakTipe(r.unitId), no: '',
-                                     merek: '', dept: '', tangki: 0, aktif: true, createdAt: Date.now() };
+                                     merek: '', dept: r.dept || '', bbmUtama: 'Solar', holderAktif: '',
+                                     riwayatPemegang: [], tangki: 0, aktif: true, createdAt: Date.now() };
             }
-            if (!Master.holder(r.holder) && !danaBaru[r.holder]) {
-              danaBaru[r.holder] = { id: r.holder, nama: '', aktif: true, createdAt: Date.now() };
+            if (!Master.holder(holder) && !danaBaru[holder]) {
+              danaBaru[holder] = { id: holder, nama: '', aktif: true, createdAt: Date.now() };
             }
           });
         }
@@ -3596,7 +4023,10 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         ['KM', 'Boleh kosong', 'Angka odometer. Dipakai menghitung konsumsi km/L.'],
         ['QTY', 'Wajib', 'Jumlah liter. Boleh pakai koma, contoh 30,67'],
         ['Nilai', 'Wajib', 'Total rupiah yang dibayar. Angka saja, tanpa Rp dan tanpa titik.'],
-        ['Keterangan', 'Boleh kosong', 'Lokasi SPBU atau catatan lain.'],
+        ['Jenis BBM', 'Boleh kosong', 'B40, B50, Dexlite, Pertamina Dex, Pertalite, Pertamax, atau Pertamax Turbo.'],
+        ['Departemen', 'Boleh kosong', 'Beban alokasi biaya saat pengisian, contoh Produksi.'],
+        ['Lokasi', 'Boleh kosong', 'Lokasi unit saat pengisian, contoh Kodal.'],
+        ['Keterangan', 'Boleh kosong', 'Catatan lain.'],
         [],
         ['Catatan'],
         ['', 'Harga per liter dihitung otomatis dari Nilai dibagi QTY, tidak perlu diisi.'],
@@ -3608,17 +4038,17 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       XLSX.utils.book_append_sheet(wb, wsP, 'Petunjuk');
 
       var ws1 = XLSX.utils.aoa_to_sheet([
-        ['Tanggal', 'ID', 'Dana', 'KM', 'QTY', 'Nilai', 'Keterangan'],
-        ['13-09-2026', 'LV11', 'LV11', 89691, 30.67, 500000, 'SPBU Km 12 Sangatta — baris contoh, hapus sebelum diisi']
+        ['Tanggal', 'ID', 'Dana', 'KM', 'QTY', 'Nilai', 'Jenis BBM', 'Departemen', 'Lokasi', 'Keterangan'],
+        ['13-09-2026', 'LV11', 'LV11', 89691, 30.67, 500000, 'B40', 'Produksi', 'Kodal', 'baris contoh, hapus sebelum diisi']
       ]);
-      ws1['!cols'] = [{ wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 46 }];
+      ws1['!cols'] = [{ wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 12 }, { wch: 40 }];
       XLSX.utils.book_append_sheet(wb, ws1, 'Pengisian');
 
       var ws2 = XLSX.utils.aoa_to_sheet([
-        ['ID', 'Tipe', 'Nomor Polisi', 'Merek', 'Departemen'],
-        ['LV11', 'LV', 'KT 1234 AB', 'Toyota Hilux 4x4', 'Mining — baris contoh, hapus sebelum diisi']
+        ['ID', 'Tipe', 'Nomor Polisi', 'Merek', 'Bahan Bakar Utama', 'Departemen', 'Pemegang'],
+        ['LV11', 'LV', 'KT 1234 AB', 'Toyota Hilux 4x4', 'Solar', 'Mining', 'Budi Santoso — baris contoh, hapus sebelum diisi']
       ]);
-      ws2['!cols'] = [{ wch: 10 }, { wch: 8 }, { wch: 16 }, { wch: 22 }, { wch: 44 }];
+      ws2['!cols'] = [{ wch: 10 }, { wch: 8 }, { wch: 16 }, { wch: 22 }, { wch: 16 }, { wch: 14 }, { wch: 40 }];
       XLSX.utils.book_append_sheet(wb, ws2, 'Unit');
 
       var ws3 = XLSX.utils.aoa_to_sheet([
@@ -3709,6 +4139,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       Master.isiSelectUnit(U.el('flUnit'), 'Semua unit');
       Master.isiSelectHolder(U.el('flDana'), 'Semua');
       Master.isiSelectHolder(U.el('sdDana'), 'Pilih');
+      Master.isiSelectHolder(U.el('unHolder'), 'Sama dengan ID unit');
 
       return App.daftarBulan().then(function (bulan) {
         var opsi = bulan.map(function (b) {
@@ -3830,6 +4261,25 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       U.el('tblSimpanDana').addEventListener('click', Master.simpanDana);
       U.el('tblSimpanSaldo').addEventListener('click', Master.simpanSaldoAwal);
       U.el('tblTopup').addEventListener('click', Master.catatTopup);
+      U.el('inFotoTopup').addEventListener('change', function (e) {
+        Master.tambahFotoTopupBaru(e.target.files); e.target.value = '';
+      });
+      U.el('tuFoto').addEventListener('change', function (e) {
+        var files = e.target.files, topupId = U.el('tuId').value;
+        var tugas = [];
+        for (var i = 0; i < files.length; i++) {
+          if (files[i].type.indexOf('image/') === 0) tugas.push(Foto.dariBerkas(files[i], topupId, U.el('sdBulan').value, 'topup'));
+        }
+        Promise.all(tugas).then(function (hasil) {
+          return hasil.length ? DB.putBanyak('photos', hasil) : null;
+        }).then(function () { return Foto.milik(topupId); }).then(function (fs) {
+          Master._fotoTopupLihat = fs;
+          Master.renderFotoTopupLihat();
+          Master.renderSaldo();
+        });
+        e.target.value = '';
+      });
+      U.el('tblHapusTopup').addEventListener('click', Master.hapusTopup);
       U.el('sdBulan').addEventListener('change', Master.renderSaldo);
       U.el('sdDana').addEventListener('change', Master.renderSaldo);
       U.el('tblSimpanCfg').addEventListener('click', App.simpanCfg);
