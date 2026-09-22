@@ -389,9 +389,10 @@ table.tb tr:last-child td { border-bottom: 0; }
     </div>
 
     <div class="isian">
-      <label for="inDana">Dana <span class="wajib">*</span></label>
-      <select id="inDana"><option value="">Pilih pemegang dana</option></select>
-      <span class="bantu">Terisi otomatis sesuai unit. Ubah bila dana diambil dari pemegang lain.</span>
+      <label for="inDanaUnit">Dana</label>
+      <select id="inDanaUnit"><option value="">Dana unit sendiri</option></select>
+      <span class="bantu" id="inDanaInfo"></span>
+      <span class="bantu">Biarkan default kecuali unit ini sedang menggantikan tugas unit lain (Backup)</span>
     </div>
 
     <div class="baris">
@@ -542,22 +543,22 @@ table.tb tr:last-child td { border-bottom: 0; }
           <select id="unBbm"><option value="Solar">Solar</option><option value="Bensin">Bensin</option></select>
         </div>
         <div class="isian">
-          <label for="unHolder">Pemegang dana saat ini</label>
-          <select id="unHolder"><option value="">Sama dengan ID unit</option></select>
-        </div>
-      </div>
-      <div class="baris">
-        <div class="isian">
           <label for="unMerek">Merek &amp; model</label>
           <input type="text" id="unMerek" placeholder="Toyota Hilux 4x4">
         </div>
+      </div>
+      <div class="baris">
         <div class="isian">
           <label for="unDept">Departemen default</label>
           <input type="text" id="unDept" placeholder="Mining">
           <span class="bantu">Otomatis mengisi form Input, bisa diganti tiap pengisian</span>
         </div>
       </div>
-      <div id="riwayatPemegang" style="font-size:12px;color:var(--samar);margin-bottom:10px"></div>
+      <div class="isian" id="barisPemegangAwal">
+        <label for="unPemegangAwal">Pemegang dana awal</label>
+        <input type="text" id="unPemegangAwal" placeholder="Budi Santoso">
+        <span class="bantu">Hanya berlaku saat membuat unit baru. Untuk mengganti pemegang unit yang sudah ada, gunakan Transfer Dana.</span>
+      </div>
       <button class="tbl utama" id="tblSimpanUnit">Simpan unit</button>
     </div>
     <h2 class="judul">Daftar unit</h2>
@@ -586,16 +587,17 @@ table.tb tr:last-child td { border-bottom: 0; }
     <div class="kartu">
       <div class="baris">
         <div class="isian">
-          <label for="sdDana">Dana <span class="wajib">*</span></label>
-          <select id="sdDana"><option value="">Pilih</option></select>
+          <label for="sdUnit">Unit <span class="wajib">*</span></label>
+          <select id="sdUnit"><option value="">Pilih</option></select>
         </div>
         <div class="isian">
           <label for="sdBulan">Periode <span class="wajib">*</span></label>
           <select id="sdBulan"></select>
         </div>
       </div>
+      <div id="sdKantongInfo" style="font-size:13px;color:var(--kabur);margin-bottom:12px"></div>
       <div class="isian">
-        <label for="sdAwal">Saldo awal</label>
+        <label for="sdAwal">Saldo awal (isi manual bila perlu menimpa hitungan otomatis)</label>
         <input type="text" inputmode="numeric" id="sdAwal" class="angka" placeholder="3000000">
       </div>
       <button class="tbl" id="tblSimpanSaldo">Simpan saldo awal</button>
@@ -614,6 +616,16 @@ table.tb tr:last-child td { border-bottom: 0; }
         <label for="tpKet">Keterangan top-up</label>
         <input type="text" id="tpKet" placeholder="Pengisian dana operasional">
       </div>
+      <div class="baris">
+        <div class="isian">
+          <label for="tpPengirim">Pengirim</label>
+          <input type="text" id="tpPengirim" placeholder="Kasir Site">
+        </div>
+        <div class="isian">
+          <label for="tpNoReq">No Request</label>
+          <input type="text" id="tpNoReq" placeholder="RQ-0091">
+        </div>
+      </div>
       <div id="daftarFotoTopup"></div>
       <div class="foto-tambah" style="padding:14px;margin-bottom:10px">
         <input type="file" id="inFotoTopup" accept="image/*" multiple>
@@ -622,15 +634,46 @@ table.tb tr:last-child td { border-bottom: 0; }
       </div>
       <button class="tbl utama" id="tblTopup">Catat top-up</button>
     </div>
-    <h2 class="judul">Riwayat top-up periode ini</h2>
+    <h2 class="judul">Riwayat dana masuk periode ini</h2>
     <div class="kartu rapat" id="daftarTopup"></div>
+
+    <h2 class="judul">Transfer dana ke pemegang lain</h2>
+    <div class="sorot info">
+      Untuk kasus pemegang unit berganti (pindah tugas, berhalangan, dsb). Kantong dana lama tidak hilang — nilainya tetap tercatat apa adanya, tinggal berhenti menerima transaksi baru. Tanggal boleh dipilih mundur sesuai kapan perpindahan sebenarnya terjadi.
+    </div>
+    <div class="kartu">
+      <div class="isian">
+        <label for="tdUnit">Unit <span class="wajib">*</span></label>
+        <select id="tdUnit"><option value="">Pilih</option></select>
+      </div>
+      <div class="baris">
+        <div class="isian">
+          <label for="tdTgl">Tanggal transfer</label>
+          <input type="date" id="tdTgl">
+        </div>
+        <div class="isian">
+          <label for="tdNamaBaru">Nama pemegang baru <span class="wajib">*</span></label>
+          <input type="text" id="tdNamaBaru" placeholder="Andi Pratama">
+        </div>
+      </div>
+      <div class="isian">
+        <label for="tdNilai">Nilai dipindahkan</label>
+        <input type="text" inputmode="numeric" id="tdNilai" class="angka" placeholder="500000">
+        <span class="bantu">Boleh kosong/nol kalau kantong lama memang sudah tidak ada sisa</span>
+      </div>
+      <div class="isian">
+        <label for="tdKet">Keterangan</label>
+        <input type="text" id="tdKet" placeholder="Serah terima jabatan">
+      </div>
+      <button class="tbl gelap" id="tblTransferDana">Transfer dana</button>
+    </div>
     <h2 class="judul">Posisi dana periode ini</h2>
     <div class="kartu rapat" id="daftarSaldo"></div>
   </div>
 
   <div id="mstImpor" style="display:none">
     <div class="sorot info">
-      Kolom yang dibaca: <b>Tanggal, ID, Dana, KM, QTY, Nilai, Keterangan</b>. Urutan kolom bebas — sistem mengenali dari nama judulnya. Berkas ekspor dari aplikasi lama juga terbaca.
+      Kolom yang dibaca: <b>Pengisian</b> (Tanggal, ID, Dana, KM, QTY, Nilai), <b>Unit</b> (ID, Tipe, Bahan Bakar), <b>Saldo Awal</b> (Periode, Dana, Saldo Awal), dan <b>Dana Masuk</b> (Tanggal, Dana, Nilai) untuk top-up. Urutan kolom bebas — sistem mengenali dari nama judulnya.
     </div>
     <div class="kartu">
       <button class="tbl" id="tblTemplate">Unduh template Excel</button>
@@ -771,7 +814,10 @@ table.tb tr:last-child td { border-bottom: 0; }
       <div class="isian"><label>Tanggal</label><input type="date" id="ubTgl"></div>
       <div class="isian"><label>ID unit</label><select id="ubUnit"></select></div>
     </div>
-    <div class="isian"><label>Dana</label><select id="ubDana"></select></div>
+    <div class="isian">
+      <label>Dana</label><select id="ubDanaUnit"></select>
+      <span class="bantu" id="ubDanaInfo"></span>
+    </div>
     <div class="baris">
       <div class="isian"><label>KM</label><input type="text" inputmode="numeric" id="ubKm" class="angka"></div>
       <div class="isian"><label>QTY liter</label><input type="text" inputmode="decimal" id="ubQty" class="angka"></div>
@@ -806,18 +852,35 @@ table.tb tr:last-child td { border-bottom: 0; }
 <div class="lembar" id="lembarTopup">
   <div class="lembar-isi">
     <div class="lembar-kop">
-      <h3>Bukti transfer</h3>
+      <h3>Detail dana masuk</h3>
       <button class="lembar-tutup" data-tutup="lembarTopup">&times;</button>
     </div>
     <input type="hidden" id="tuId">
-    <div id="tuRingkas" style="font-size:13px;color:var(--kabur);margin-bottom:12px"></div>
+    <div id="tuTagJenis" style="margin-bottom:10px"></div>
+
+    <div id="tuFormEdit">
+      <div class="baris">
+        <div class="isian"><label>Tanggal</label><input type="date" id="tuTgl"></div>
+        <div class="isian"><label>Nilai</label><input type="text" inputmode="numeric" id="tuNilai" class="angka"></div>
+      </div>
+      <div class="isian"><label>Keterangan</label><input type="text" id="tuKet"></div>
+      <div class="baris">
+        <div class="isian"><label>Pengirim</label><input type="text" id="tuPengirim"></div>
+        <div class="isian"><label>No Request</label><input type="text" id="tuNoReq"></div>
+      </div>
+      <button class="tbl utama" id="tblSimpanTopup">Simpan perubahan</button>
+      <div style="height:10px"></div>
+    </div>
+    <div id="tuRingkasBaca" style="display:none;font-size:13px;color:var(--kabur);margin-bottom:12px"></div>
+
+    <h2 class="judul">Bukti transfer</h2>
     <div id="tuDaftarFoto"></div>
     <div class="foto-tambah" style="padding:14px;margin-top:8px">
       <input type="file" id="tuFoto" accept="image/*" multiple>
       <b>Tambah bukti</b>
     </div>
     <div style="height:14px"></div>
-    <button class="tbl bahaya" id="tblHapusTopup">Hapus catatan top-up ini</button>
+    <button class="tbl bahaya" id="tblHapusTopup">Hapus catatan ini</button>
   </div>
 </div>
 
@@ -1401,10 +1464,11 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 /* db.js — lapisan IndexedDB
    Store:
      units   : master unit (LV/LT/Lainnya)
-     holders : master pemegang dana
-     fills   : transaksi pengisian BBM
-     photos  : foto nota / kegiatan (blob ASLI, tanpa kompresi) + thumb
-     saldo   : saldo awal & top-up per holder per bulan
+     holders : direktori nama pemegang (untuk pencocokan/autolengkap, BUKAN identitas dana)
+     kantong : kantong dana — identitasnya unik per (unitId + masa jabatan pemegang)
+     fills   : transaksi pengisian BBM, merujuk kantongId yang berlaku saat itu
+     photos  : foto nota / kegiatan / bukti transfer (blob ASLI, tanpa kompresi) + thumb
+     saldo   : saldo awal & top-up per kantong per bulan
      arsip   : catatan paket arsip foto (ZIP)
      config  : pengaturan aplikasi
 */
@@ -1412,7 +1476,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
   'use strict';
 
   var NAMA = 'bbm_monitoring';
-  var VERSI = 1;
+  var VERSI = 2;
   var _db = null;
 
   function buka() {
@@ -1422,6 +1486,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
       req.onupgradeneeded = function (e) {
         var db = e.target.result;
+        var tx = e.target.transaction;
 
         if (!db.objectStoreNames.contains('units')) {
           var u = db.createObjectStore('units', { keyPath: 'id' });
@@ -1430,14 +1495,21 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         if (!db.objectStoreNames.contains('holders')) {
           db.createObjectStore('holders', { keyPath: 'id' });
         }
+        if (!db.objectStoreNames.contains('kantong')) {
+          var k = db.createObjectStore('kantong', { keyPath: 'id' });
+          k.createIndex('unitId', 'unitId');
+        }
         if (!db.objectStoreNames.contains('fills')) {
           var f = db.createObjectStore('fills', { keyPath: 'id' });
           f.createIndex('bulan', 'bulan');
           f.createIndex('tgl', 'tgl');
           f.createIndex('unitId', 'unitId');
-          f.createIndex('holder', 'holder');
-          f.createIndex('grup', 'grup');           /* holder|unitId|bulan */
+          f.createIndex('kantongId', 'kantongId');
           f.createIndex('unitTgl', ['unitId', 'tgl']);
+        } else {
+          /* naik dari v1: tambah index kantongId ke store fills yang sudah ada */
+          var fs = tx.objectStore('fills');
+          if (!fs.indexNames.contains('kantongId')) fs.createIndex('kantongId', 'kantongId');
         }
         if (!db.objectStoreNames.contains('photos')) {
           var p = db.createObjectStore('photos', { keyPath: 'id' });
@@ -1446,9 +1518,12 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           p.createIndex('status', 'status');
         }
         if (!db.objectStoreNames.contains('saldo')) {
-          var s = db.createObjectStore('saldo', { keyPath: 'id' }); /* holder|bulan */
+          var s = db.createObjectStore('saldo', { keyPath: 'id' }); /* kantongId|bulan */
           s.createIndex('bulan', 'bulan');
-          s.createIndex('holder', 'holder');
+          s.createIndex('kantongId', 'kantongId');
+        } else {
+          var ss = tx.objectStore('saldo');
+          if (!ss.indexNames.contains('kantongId')) ss.createIndex('kantongId', 'kantongId');
         }
         if (!db.objectStoreNames.contains('arsip')) {
           var a = db.createObjectStore('arsip', { keyPath: 'id' });
@@ -1555,7 +1630,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
     /* ---- reset total ---- */
     resetSemua: function () {
-      var stores = ['units', 'holders', 'fills', 'photos', 'saldo', 'arsip'];
+      var stores = ['units', 'holders', 'kantong', 'fills', 'photos', 'saldo', 'arsip'];
       return Promise.all(stores.map(function (s) { return API.kosongkan(s); }));
     }
   };
@@ -1700,18 +1775,31 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 </script>
 <script>
 /* js/master.js */
-/* master.js — unit, pemegang dana, saldo & top-up */
+/* master.js — unit, kantong dana, saldo & top-up, transfer dana
+   Identitas kantong dana = pasangan (unitId + masa jabatan pemegang), BUKAN
+   kode pemegang global. Setiap kali pemegang sebuah unit berganti, itu
+   selalu berarti transfer: kantong lama berhenti menerima transaksi baru
+   (nilainya tetap apa adanya — bisa nol, lebih, atau minus, tidak "ditutup"
+   secara khusus), kantong baru dibuka dengan pemegang baru, dan sejumlah
+   dana boleh dipindahkan dari kantong lama ke kantong baru. Satu unit boleh
+   punya banyak kantong sepanjang riwayatnya; setiap transaksi (fills)
+   menyimpan kantongId yang berlaku SAAT itu terjadi, permanen.
+   `holders` hanya direktori NAMA untuk pencocokan/autolengkap saat import,
+   bukan identitas dana.
+*/
 (function (global) {
   'use strict';
 
   var M = {
     units: [],
     holders: [],
+    kantong: [],
 
     muat: function () {
-      return Promise.all([DB.semua('units'), DB.semua('holders')]).then(function (r) {
+      return Promise.all([DB.semua('units'), DB.semua('holders'), DB.semua('kantong')]).then(function (r) {
         M.units = r[0].sort(function (a, b) { return a.id.localeCompare(b.id); });
         M.holders = r[1].sort(function (a, b) { return a.id.localeCompare(b.id); });
+        M.kantong = r[2];
       });
     },
 
@@ -1728,7 +1816,36 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       return h && h.nama ? h.nama : id;
     },
 
-    /* isi <select> unit */
+    kantongById: function (id) {
+      for (var i = 0; i < M.kantong.length; i++) if (M.kantong[i].id === id) return M.kantong[i];
+      return null;
+    },
+    kantongAktif: function (unitId) {
+      for (var i = 0; i < M.kantong.length; i++) {
+        if (M.kantong[i].unitId === unitId && M.kantong[i].aktif) return M.kantong[i];
+      }
+      return null;
+    },
+    kantongMilikUnit: function (unitId) {
+      return M.kantong.filter(function (k) { return k.unitId === unitId; })
+        .sort(function (a, b) { return (a.mulai || '').localeCompare(b.mulai || ''); });
+    },
+    labelKantong: function (k) {
+      if (!k) return '-';
+      var u = M.unit(k.unitId);
+      return (u ? u.id : k.unitId) + (k.namaHolder ? ' — ' + k.namaHolder : '');
+    },
+
+    pastikanKantongAwal: function (unitId, namaHolder, mulai) {
+      var ada = M.kantongAktif(unitId);
+      if (ada) return Promise.resolve(ada);
+      var k = {
+        id: U.uid('K'), unitId: unitId, namaHolder: (namaHolder || '').trim(),
+        mulai: mulai || U.hariIni(), aktif: true, dariKantong: null, createdAt: Date.now()
+      };
+      return DB.put('kantong', k).then(function () { M.kantong.push(k); return k; });
+    },
+
     isiSelectUnit: function (sel, kosongLabel) {
       if (!sel) return;
       var lama = sel.value;
@@ -1739,23 +1856,32 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         }).join('');
       if (lama) sel.value = lama;
     },
-    isiSelectHolder: function (sel, kosongLabel) {
+    isiSelectUnitLain: function (sel, unitIdSaatIni) {
       if (!sel) return;
       var lama = sel.value;
-      sel.innerHTML = '<option value="">' + (kosongLabel || 'Pilih pemegang dana') + '</option>' +
-        M.holders.map(function (h) {
-          return '<option value="' + U.esc(h.id) + '">' + U.esc(h.id) +
-                 (h.nama ? ' · ' + U.esc(h.nama) : '') + '</option>';
+      sel.innerHTML = '<option value="">Dana unit sendiri</option>' +
+        M.units.filter(function (u) { return u.id !== unitIdSaatIni; }).map(function (u) {
+          var k = M.kantongAktif(u.id);
+          return '<option value="' + U.esc(u.id) + '">' + U.esc(u.id) +
+                 (k && k.namaHolder ? ' — ' + U.esc(k.namaHolder) : '') + '</option>';
         }).join('');
       if (lama) sel.value = lama;
     },
+    /* isi <select> untuk menyaring transaksi berdasarkan kantong dana */
+    isiSelectKantong: function (sel, kosongLabel) {
+      if (!sel) return;
+      var lama = sel.value;
+      sel.innerHTML = '<option value="">' + (kosongLabel || 'Semua') + '</option>' +
+        M.kantong.slice().sort(function (a, b) { return M.labelKantong(a).localeCompare(M.labelKantong(b)); })
+          .map(function (k) { return '<option value="' + U.esc(k.id) + '">' + U.esc(M.labelKantong(k)) + '</option>'; })
+          .join('');
+      if (lama) sel.value = lama;
+    },
 
-    /* ── simpan unit ── */
     simpanUnit: function () {
       var id = U.normId(U.el('unId').value);
       if (!id) return App.pesan('ID unit belum diisi', true);
       var lama = M.unit(id);
-      var holderBaru = U.normId(U.el('unHolder').value);
 
       var u = {
         id: id,
@@ -1765,39 +1891,19 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         merek: U.el('unMerek').value.trim(),
         dept: U.el('unDept').value.trim(),
         bbmUtama: U.el('unBbm').value,
-        holderAktif: holderBaru,
-        riwayatPemegang: lama ? (lama.riwayatPemegang || []) : [],
         aktif: true,
-        createdAt: Date.now()
+        createdAt: lama ? lama.createdAt : Date.now()
       };
-      if (lama) {
-        u.createdAt = lama.createdAt;
-        if ((lama.holderAktif || '') !== holderBaru) {
-          u.riwayatPemegang.push({
-            holderId: holderBaru || id, dari: lama.holderAktif || id,
-            mulai: U.hariIni(), createdAt: Date.now()
-          });
-        }
-      }
 
       return DB.put('units', u).then(function () {
-        /* pemegang dana dengan kode sama dibuat otomatis bila belum ada */
-        if (!M.holder(id)) {
-          return DB.put('holders', { id: id, nama: '', aktif: true, createdAt: Date.now() });
-        }
+        if (!lama) return M.pastikanKantongAwal(id, U.el('unPemegangAwal').value, U.hariIni());
       }).then(M.muat).then(function () {
-        ['unId', 'unNo', 'unTangki', 'unMerek', 'unDept'].forEach(function (k) { U.el(k).value = ''; });
-        U.el('unHolder').value = '';
+        ['unId', 'unNo', 'unTangki', 'unMerek', 'unDept', 'unPemegangAwal'].forEach(function (k) { U.el(k).value = ''; });
+        U.el('barisPemegangAwal').style.display = '';
         M.render();
         App.segarkanPilihan();
         App.pesan(lama ? 'Unit ' + id + ' diperbarui' : 'Unit ' + id + ' ditambahkan');
       });
-    },
-
-    /* kode dana yang berlaku untuk unit ini saat ini */
-    holderUntuk: function (unitId) {
-      var u = M.unit(unitId);
-      return (u && u.holderAktif) || unitId;
     },
 
     hapusUnit: function (id) {
@@ -1806,8 +1912,17 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         if (aktif.length) {
           return App.pesan('Unit ' + id + ' punya ' + aktif.length + ' pengisian, tidak bisa dihapus', true);
         }
-        if (!confirm('Hapus unit ' + id + '?')) return;
-        return DB.hapus('units', id).then(M.muat).then(function () {
+        if (!confirm('Hapus unit ' + id + ' beserta seluruh kantong dananya?')) return;
+        var kantongUnit = M.kantongMilikUnit(id);
+        return Promise.all(kantongUnit.map(function (k) {
+          return DB.hapus('kantong', k.id).then(function () {
+            return DB.cariIndex('saldo', 'kantongId', k.id);
+          }).then(function (docs) {
+            return Promise.all(docs.map(function (d) { return DB.hapus('saldo', d.id); }));
+          });
+        })).then(function () {
+          return DB.hapus('units', id);
+        }).then(M.muat).then(function () {
           M.render(); App.segarkanPilihan(); App.pesan('Unit ' + id + ' dihapus');
         });
       });
@@ -1815,26 +1930,18 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
     isiFormUnit: function (id) {
       var u = M.unit(id); if (!u) return;
-      Master.isiSelectHolder(U.el('unHolder'), 'Sama dengan ID unit');
       U.el('unId').value = u.id; U.el('unTipe').value = u.tipe;
       U.el('unNo').value = u.no || ''; U.el('unTangki').value = u.tangki || '';
       U.el('unMerek').value = u.merek || ''; U.el('unDept').value = u.dept || '';
       U.el('unBbm').value = u.bbmUtama || 'Solar';
-      U.el('unHolder').value = u.holderAktif || '';
-
-      var riw = u.riwayatPemegang || [];
-      U.el('riwayatPemegang').innerHTML = riw.length
-        ? 'Riwayat pemegang: ' + riw.slice(-3).reverse().map(function (r) {
-            return U.esc(r.holderId) + ' sejak ' + U.fmtTgl(r.mulai);
-          }).join(' &middot; ')
-        : '';
+      U.el('unPemegangAwal').value = '';
+      U.el('barisPemegangAwal').style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
-    /* ── simpan pemegang dana ── */
     simpanDana: function () {
       var id = U.normId(U.el('hdId').value);
-      if (!id) return App.pesan('Kode dana belum diisi', true);
+      if (!id) return App.pesan('Kode belum diisi', true);
       var lama = M.holder(id);
       return DB.put('holders', {
         id: id, nama: U.el('hdNama').value.trim(), aktif: true,
@@ -1842,57 +1949,94 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       }).then(M.muat).then(function () {
         U.el('hdId').value = ''; U.el('hdNama').value = '';
         M.render(); App.segarkanPilihan();
-        App.pesan(lama ? 'Dana ' + id + ' diperbarui' : 'Dana ' + id + ' ditambahkan');
+        App.pesan(lama ? 'Diperbarui' : 'Ditambahkan');
       });
     },
-
     hapusDana: function (id) {
-      return DB.cariIndex('fills', 'holder', id).then(function (f) {
-        var aktif = f.filter(function (x) { return !x.deleted; });
-        if (aktif.length) {
-          return App.pesan('Dana ' + id + ' terpakai di ' + aktif.length + ' pengisian', true);
-        }
-        if (!confirm('Hapus pemegang dana ' + id + '?')) return;
-        return DB.hapus('holders', id).then(M.muat).then(function () {
-          M.render(); App.segarkanPilihan(); App.pesan('Dana ' + id + ' dihapus');
-        });
+      if (!confirm('Hapus dari direktori nama?')) return;
+      return DB.hapus('holders', id).then(M.muat).then(function () {
+        M.render(); App.segarkanPilihan(); App.pesan('Dihapus dari direktori');
       });
     },
 
-    /* ── saldo ── */
-    kunciSaldo: function (holder, bulan) { return holder + '|' + bulan; },
+    kunciSaldo: function (kantongId, bulan) { return kantongId + '|' + bulan; },
+
+    _bulanSebelum: function (bulan) {
+      var p = bulan.split('-'); var y = +p[0], b = +p[1] - 1;
+      if (b < 1) { b = 12; y -= 1; }
+      return y + '-' + U.pad(b);
+    },
+
+    posisiDana: function (kantongId, bulan, _depth) {
+      _depth = _depth || 0;
+      return DB.get('saldo', M.kunciSaldo(kantongId, bulan)).catch(function () { return null; })
+        .then(function (s) {
+          if (s && s.saldoAwalManual) return M._hitungPosisi(kantongId, bulan, s, s.saldoAwal || 0);
+
+          var kant = M.kantongById(kantongId);
+          var bulanSebelum = M._bulanSebelum(bulan);
+          var lewatMulai = kant && kant.mulai && bulanSebelum < U.bulanDari(kant.mulai);
+
+          if (_depth >= 12 || lewatMulai) {
+            return M._hitungPosisi(kantongId, bulan, s, 0);
+          }
+          return M.posisiDana(kantongId, bulanSebelum, _depth + 1).then(function (prev) {
+            return M._hitungPosisi(kantongId, bulan, s, prev.sisaAkhir);
+          });
+        });
+    },
+    _hitungPosisi: function (kantongId, bulan, s, saldoAwalOtomatis) {
+      return DB.cariIndex('fills', 'kantongId', kantongId).then(function (fills) {
+        var pakai = fills.filter(function (f) { return !f.deleted && f.bulan === bulan; })
+          .reduce(function (a, f) { return a + (f.nilai || 0); }, 0);
+        var topups = (s && s.topups) || [];
+        var topup = topups.reduce(function (a, t) { return a + t.nilai; }, 0);
+        var manual = !!(s && s.saldoAwalManual);
+        var saldoAwal = manual ? (s.saldoAwal || 0) : saldoAwalOtomatis;
+        var tersedia = saldoAwal + topup;
+        return {
+          saldoAwal: saldoAwal, otomatis: !manual, topup: topup, topups: topups,
+          pakai: pakai, tersedia: tersedia, sisaAkhir: tersedia - pakai
+        };
+      });
+    },
 
     simpanSaldoAwal: function () {
-      var h = U.el('sdDana').value, b = U.el('sdBulan').value;
-      if (!h || !b) return App.pesan('Dana dan periode wajib dipilih', true);
-      var id = M.kunciSaldo(h, b);
-      return DB.get('saldo', id).then(function (s) {
-        s = s || { id: id, holder: h, bulan: b, topups: [] };
+      var unitId = U.el('sdUnit').value, b = U.el('sdBulan').value;
+      if (!unitId || !b) return App.pesan('Unit dan periode wajib dipilih', true);
+      var k = M.kantongAktif(unitId);
+      if (!k) return App.pesan('Unit ini belum punya kantong dana', true);
+      var id = M.kunciSaldo(k.id, b);
+      return DB.get('saldo', id).catch(function () { return null; }).then(function (s) {
+        s = s || { id: id, kantongId: k.id, bulan: b, topups: [] };
         s.saldoAwal = U.parseNum(U.el('sdAwal').value);
+        s.saldoAwalManual = true;
         return DB.put('saldo', s);
       }).then(function () {
         U.el('sdAwal').value = '';
-        M.renderSaldo(); App.pesan('Saldo awal tersimpan');
+        M.renderSaldo(); App.pesan('Saldo awal tersimpan (menimpa perhitungan otomatis)');
       });
     },
 
     catatTopup: function () {
-      var h = U.el('sdDana').value, b = U.el('sdBulan').value;
+      var unitId = U.el('sdUnit').value, b = U.el('sdBulan').value;
       var nilai = U.parseNum(U.el('tpNilai').value);
-      if (!h || !b) return App.pesan('Dana dan periode wajib dipilih', true);
+      if (!unitId || !b) return App.pesan('Unit dan periode wajib dipilih', true);
+      var k = M.kantongAktif(unitId);
+      if (!k) return App.pesan('Unit ini belum punya kantong dana', true);
       if (nilai <= 0) return App.pesan('Jumlah top-up belum diisi', true);
-      var id = M.kunciSaldo(h, b);
+
+      var id = M.kunciSaldo(k.id, b);
       var topupId = U.uid('U');
       var fotoAntre = M._fotoTopupBaru || [];
 
-      DB.get('saldo', id).then(function (s) {
-        s = s || { id: id, holder: h, bulan: b, saldoAwal: 0, topups: [] };
+      return DB.get('saldo', id).catch(function () { return null; }).then(function (s) {
+        s = s || { id: id, kantongId: k.id, bulan: b, topups: [] };
         s.topups = s.topups || [];
         s.topups.push({
-          id: topupId,
-          tgl: U.el('tpTgl').value || U.hariIni(),
-          nilai: nilai,
-          ket: U.el('tpKet').value.trim()
+          id: topupId, tgl: U.el('tpTgl').value || U.hariIni(), nilai: nilai,
+          ket: U.el('tpKet').value.trim(), jenis: 'topup',
+          pengirim: U.el('tpPengirim').value.trim(), noRequest: U.el('tpNoReq').value.trim()
         });
         return DB.put('saldo', s);
       }).then(function () {
@@ -1900,6 +2044,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         return fotoAntre.length ? DB.putBanyak('photos', fotoAntre) : null;
       }).then(function () {
         U.el('tpNilai').value = ''; U.el('tpKet').value = '';
+        U.el('tpPengirim').value = ''; U.el('tpNoReq').value = '';
         M._fotoTopupBaru = [];
         M.renderFotoTopupBaru();
         M.renderSaldo();
@@ -1908,7 +2053,6 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       });
     },
 
-    /* ── foto bukti transfer: antrean sebelum top-up disimpan ── */
     _fotoTopupBaru: [],
     tambahFotoTopupBaru: function (files) {
       if (!files || !files.length) return;
@@ -1939,13 +2083,33 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       });
     },
 
-    /* ── lembar riwayat top-up (lihat/tambah bukti, hapus) ── */
-    bukaTopup: function (holder, bulan, topupId) {
-      DB.get('saldo', M.kunciSaldo(holder, bulan)).then(function (s) {
+    bukaTopup: function (kantongId, bulan, topupId) {
+      return DB.get('saldo', M.kunciSaldo(kantongId, bulan)).then(function (s) {
         var t = (s.topups || []).find(function (x) { return x.id === topupId; });
         if (!t) return;
         U.el('tuId').value = topupId;
-        U.el('tuRingkas').textContent = U.fmtTgl(t.tgl) + ' · ' + U.fmtRp(t.nilai) + (t.ket ? ' · ' + t.ket : '');
+        U.el('tuId').dataset.kantong = kantongId;
+        U.el('tuId').dataset.bulan = bulan;
+
+        var mutasi = t.jenis === 'mutasiKeluar' || t.jenis === 'mutasiMasuk';
+        U.el('tuTagJenis').innerHTML = t.jenis === 'mutasiKeluar' ? '<span class="tag awas">Mutasi keluar</span>'
+          : t.jenis === 'mutasiMasuk' ? '<span class="tag ok">Mutasi masuk</span>'
+          : '<span class="tag ok">Top-up</span>';
+
+        U.el('tuFormEdit').style.display = mutasi ? 'none' : '';
+        U.el('tuRingkasBaca').style.display = mutasi ? '' : 'none';
+        if (mutasi) {
+          U.el('tuRingkasBaca').innerHTML = U.fmtTgl(t.tgl) + ' &middot; ' + U.fmtRp(Math.abs(t.nilai)) +
+            (t.ket ? ' &middot; ' + U.esc(t.ket) : '') +
+            '<br><span style="font-size:11px;color:var(--samar)">Bagian dari transfer dana. Menghapus di sini akan ikut menghapus catatan pasangannya.</span>';
+        } else {
+          U.el('tuTgl').value = t.tgl;
+          U.el('tuNilai').value = t.nilai;
+          U.el('tuKet').value = t.ket || '';
+          U.el('tuPengirim').value = t.pengirim || '';
+          U.el('tuNoReq').value = t.noRequest || '';
+        }
+
         return Foto.milik(topupId).then(function (fs) {
           M._fotoTopupLihat = fs;
           M.renderFotoTopupLihat();
@@ -1953,6 +2117,46 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         });
       });
     },
+
+    simpanTopupEdit: function () {
+      var kantongId = U.el('tuId').dataset.kantong, bulanLama = U.el('tuId').dataset.bulan;
+      var id = U.el('tuId').value;
+      var tglBaru = U.el('tuTgl').value;
+      var nilaiBaru = U.parseNum(U.el('tuNilai').value);
+      if (!tglBaru || nilaiBaru <= 0) return App.pesan('Tanggal dan nilai wajib diisi', true);
+      var bulanBaru = U.bulanDari(tglBaru);
+
+      return DB.get('saldo', M.kunciSaldo(kantongId, bulanLama)).then(function (s) {
+        var idx = (s.topups || []).findIndex(function (x) { return x.id === id; });
+        if (idx < 0) return;
+        var t = s.topups[idx];
+        t.tgl = tglBaru; t.nilai = nilaiBaru;
+        t.ket = U.el('tuKet').value.trim();
+        t.pengirim = U.el('tuPengirim').value.trim();
+        t.noRequest = U.el('tuNoReq').value.trim();
+
+        if (bulanBaru === bulanLama) return DB.put('saldo', s);
+
+        s.topups.splice(idx, 1);
+        return DB.put('saldo', s).then(function () {
+          return DB.get('saldo', M.kunciSaldo(kantongId, bulanBaru)).catch(function () { return null; });
+        }).then(function (s2) {
+          s2 = s2 || { id: M.kunciSaldo(kantongId, bulanBaru), kantongId: kantongId, bulan: bulanBaru, topups: [] };
+          s2.topups = (s2.topups || []).concat([t]);
+          return DB.put('saldo', s2);
+        }).then(function () {
+          return DB.cariIndex('photos', 'fillId', id);
+        }).then(function (fs) {
+          fs.forEach(function (f) { f.bulan = bulanBaru; });
+          return fs.length ? DB.putBanyak('photos', fs) : null;
+        });
+      }).then(function () {
+        App.tutupLembar('lembarTopup');
+        M.renderSaldo();
+        App.pesan('Perubahan tersimpan');
+      });
+    },
+
     renderFotoTopupLihat: function () {
       var w = U.el('tuDaftarFoto');
       var f = M._fotoTopupLihat || [];
@@ -1977,16 +2181,98 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       });
     },
 
-    /* ambil posisi dana satu holder di satu bulan */
-    posisiDana: function (holder, bulan) {
-      return DB.get('saldo', M.kunciSaldo(holder, bulan)).then(function (s) {
-        s = s || { saldoAwal: 0, topups: [] };
-        var topup = (s.topups || []).reduce(function (a, t) { return a + t.nilai; }, 0);
-        return { saldoAwal: s.saldoAwal || 0, topup: topup, topups: s.topups || [] };
+    hapusTopup: function () {
+      var kantongId = U.el('tuId').dataset.kantong, bulan = U.el('tuId').dataset.bulan, id = U.el('tuId').value;
+      if (!confirm('Hapus catatan ini beserta buktinya?')) return;
+      return DB.get('saldo', M.kunciSaldo(kantongId, bulan)).then(function (s) {
+        var t = (s.topups || []).find(function (x) { return x.id === id; });
+        var pasangan = t && t.pasangan;
+        s.topups = (s.topups || []).filter(function (x) { return x.id !== id; });
+        var tugas = [DB.put('saldo', s)];
+        if (pasangan) {
+          tugas.push(DB.semua('saldo').then(function (semua) {
+            var lain = semua.filter(function (sd) { return sd.id !== s.id; });
+            return Promise.all(lain.map(function (sd) {
+              var ada = (sd.topups || []).some(function (x) { return x.pasangan === pasangan; });
+              if (!ada) return null;
+              sd.topups = sd.topups.filter(function (x) { return x.pasangan !== pasangan; });
+              return DB.put('saldo', sd);
+            }));
+          }));
+        }
+        return Promise.all(tugas);
+      }).then(function () {
+        return Foto.milik(id);
+      }).then(function (fs) {
+        return Promise.all(fs.map(function (f) { return DB.hapus('photos', f.id); }));
+      }).then(function () {
+        App.tutupLembar('lembarTopup');
+        M.renderSaldo();
+        App.pesan('Catatan dihapus');
       });
     },
 
-    /* ── render ── */
+    transferDana: function () {
+      var unitId = U.el('tdUnit').value;
+      var namaBaru = U.el('tdNamaBaru').value.trim();
+      var tgl = U.el('tdTgl').value || U.hariIni();
+      var nilai = U.parseNum(U.el('tdNilai').value);
+      var ket = U.el('tdKet').value.trim();
+
+      if (!unitId) return App.pesan('Pilih unit', true);
+      if (!namaBaru) return App.pesan('Nama pemegang baru wajib diisi', true);
+      if (nilai < 0) return App.pesan('Nilai tidak boleh negatif', true);
+
+      var lama = M.kantongAktif(unitId);
+      var baru = {
+        id: U.uid('K'), unitId: unitId, namaHolder: namaBaru, mulai: tgl, aktif: true,
+        dariKantong: lama ? lama.id : null, createdAt: Date.now()
+      };
+
+      var tugas = [];
+      if (lama) { lama.aktif = false; tugas.push(DB.put('kantong', lama)); }
+      tugas.push(DB.put('kantong', baru));
+
+      return Promise.all(tugas).then(function () {
+        if (lama) {
+          var idxLama = M.kantong.findIndex(function (k) { return k.id === lama.id; });
+          if (idxLama > -1) M.kantong[idxLama] = lama;
+        }
+        M.kantong.push(baru);
+
+        if (nilai > 0 && lama) {
+          var mutasiId = U.uid('M');
+          var bulan = U.bulanDari(tgl);
+          var keluar = {
+            id: U.uid('U'), tgl: tgl, nilai: -nilai,
+            ket: 'Alih ke ' + namaBaru + (ket ? ': ' + ket : ''), jenis: 'mutasiKeluar', pasangan: mutasiId
+          };
+          var masuk = {
+            id: U.uid('U'), tgl: tgl, nilai: nilai,
+            ket: 'Terima alih dari kantong sebelumnya' + (ket ? ': ' + ket : ''), jenis: 'mutasiMasuk', pasangan: mutasiId
+          };
+          return Promise.all([
+            M._tambahKeSaldo(lama.id, bulan, keluar),
+            M._tambahKeSaldo(baru.id, bulan, masuk)
+          ]);
+        }
+      }).then(function () {
+        U.el('tdNamaBaru').value = ''; U.el('tdNilai').value = ''; U.el('tdKet').value = '';
+        M.render();
+        App.segarkanPilihan();
+        App.pesan('Dana ' + unitId + ' dialihkan ke ' + namaBaru +
+          (nilai > 0 ? ' (' + U.fmtRp(nilai) + ' ikut dipindahkan)' : ''));
+      });
+    },
+    _tambahKeSaldo: function (kantongId, bulan, entri) {
+      var id = M.kunciSaldo(kantongId, bulan);
+      return DB.get('saldo', id).catch(function () { return null; }).then(function (s) {
+        s = s || { id: id, kantongId: kantongId, bulan: bulan, topups: [] };
+        s.topups = (s.topups || []).concat([entri]);
+        return DB.put('saldo', s);
+      });
+    },
+
     render: function () {
       var du = U.el('daftarUnit');
       if (M.units.length === 0) {
@@ -1994,17 +2280,19 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       } else {
         du.innerHTML = M.units.map(function (u) {
           var tag = u.tipe === 'LV' ? 'lv' : u.tipe === 'LT' ? 'lt' : '';
+          var k = M.kantongAktif(u.id);
           return '<div class="trx" data-unit="' + U.esc(u.id) + '">' +
             '<div class="isi"><div class="atas"><span class="unit">' + U.esc(u.id) + '</span>' +
             '<span class="tag ' + tag + '">' + U.esc(u.tipe) + '</span></div>' +
-            '<div class="bwh">' + U.esc([u.no, u.merek, u.dept].filter(Boolean).join(' · ') || 'Tanpa detail') + '</div></div>' +
+            '<div class="bwh">' + U.esc([u.no, u.merek, u.dept].filter(Boolean).join(' · ') || 'Tanpa detail') +
+            (k ? ' · dana: ' + U.esc(k.namaHolder || '(tanpa nama)') : '') + '</div></div>' +
             '<div class="kanan"><button class="tbl kecil" data-hapusunit="' + U.esc(u.id) + '">Hapus</button></div></div>';
         }).join('');
       }
 
       var dd = U.el('daftarDana');
       if (M.holders.length === 0) {
-        dd.innerHTML = '<div class="kosong"><b>Belum ada pemegang dana</b>Kode dana biasanya sama dengan ID unit</div>';
+        dd.innerHTML = '<div class="kosong"><b>Direktori nama kosong</b>Diisi otomatis saat import, atau tambahkan manual</div>';
       } else {
         dd.innerHTML = M.holders.map(function (h) {
           return '<div class="trx"><div class="isi"><div class="atas">' +
@@ -2018,83 +2306,173 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
     renderSaldo: function () {
       var bulan = U.el('sdBulan').value || U.bulanIni();
+      var unitId = U.el('sdUnit').value;
       var wadah = U.el('daftarSaldo');
+      var info = U.el('sdKantongInfo');
+
+      var k = unitId ? M.kantongAktif(unitId) : null;
+      info.innerHTML = k
+        ? 'Kantong aktif: <b>' + U.esc(k.namaHolder || '(tanpa nama)') + '</b> sejak ' + U.fmtTgl(k.mulai)
+        : (unitId ? 'Unit ini belum punya kantong dana' : '');
+
       M.renderTopup();
-      Promise.all([DB.cariIndex('saldo', 'bulan', bulan), DB.cariIndex('fills', 'bulan', bulan)])
-        .then(function (r) {
-          var saldos = r[0], fills = r[1].filter(function (f) { return !f.deleted; });
-          var peta = {};
-          M.holders.forEach(function (h) { peta[h.id] = { awal: 0, topup: 0, pakai: 0 }; });
-          saldos.forEach(function (s) {
-            peta[s.holder] = peta[s.holder] || { awal: 0, topup: 0, pakai: 0 };
-            peta[s.holder].awal = s.saldoAwal || 0;
-            peta[s.holder].topup = (s.topups || []).reduce(function (a, t) { return a + t.nilai; }, 0);
-          });
-          fills.forEach(function (f) {
-            peta[f.holder] = peta[f.holder] || { awal: 0, topup: 0, pakai: 0 };
-            peta[f.holder].pakai += f.nilai || 0;
-          });
 
-          var kunci = Object.keys(peta).filter(function (k) {
-            return peta[k].awal || peta[k].topup || peta[k].pakai;
-          }).sort();
+      if (!M.kantong.length) {
+        wadah.innerHTML = '<div class="kosong"><b>Belum ada kantong dana</b>Tambahkan unit di atas dulu</div>';
+        return Promise.resolve();
+      }
+      return Promise.all(M.kantong.map(function (kt) {
+        return M.posisiDana(kt.id, bulan).then(function (pos) { return { k: kt, pos: pos }; });
+      })).then(function (hasil) {
+        hasil = hasil.filter(function (h) { return h.pos.saldoAwal || h.pos.topup || h.pos.pakai; })
+          .sort(function (a, b) { return M.labelKantong(a.k).localeCompare(M.labelKantong(b.k)); });
 
-          if (!kunci.length) {
-            wadah.innerHTML = '<div class="kosong"><b>Belum ada data dana</b>Isi saldo awal untuk periode ' + U.fmtBulan(bulan) + '</div>';
-            return;
-          }
-          wadah.innerHTML = kunci.map(function (k) {
-            var p = peta[k], tersedia = p.awal + p.topup, sisa = tersedia - p.pakai;
-            var pct = tersedia > 0 ? Math.min(100, Math.round(p.pakai / tersedia * 100)) : 0;
-            var kls = pct >= 90 ? 'habis' : pct >= 70 ? 'sedang' : '';
-            return '<div style="padding:13px 14px;border-bottom:1px solid var(--garis)">' +
-              '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
-              '<b>' + U.esc(k) + '</b>' +
-              '<span style="font-family:var(--num);font-weight:600;color:' + (sisa < 0 ? 'var(--merah)' : 'inherit') + '">' + U.fmtRp(sisa) + '</span></div>' +
-              '<div style="font-size:12px;color:var(--kabur);margin-top:2px">Tersedia ' + U.fmtRp(tersedia) + ' · terpakai ' + U.fmtRp(p.pakai) + ' (' + pct + '%)</div>' +
-              '<div class="ukur"><i class="' + kls + '" style="width:' + pct + '%"></i></div></div>';
-          }).join('');
-        });
+        if (!hasil.length) {
+          wadah.innerHTML = '<div class="kosong"><b>Belum ada data dana</b>Isi saldo awal untuk periode ' + U.fmtBulan(bulan) + '</div>';
+          return;
+        }
+        wadah.innerHTML = hasil.map(function (h) {
+          var pos = h.pos, tersedia = pos.tersedia, sisa = pos.sisaAkhir;
+          var pct = tersedia > 0 ? Math.min(100, Math.round(pos.pakai / tersedia * 100)) : 0;
+          var kls = pct >= 90 ? 'habis' : pct >= 70 ? 'sedang' : '';
+          var nonaktif = !h.k.aktif ? ' <span class="tag kosong">nonaktif</span>' : '';
+          return '<div style="padding:13px 14px;border-bottom:1px solid var(--garis)">' +
+            '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
+            '<b>' + U.esc(M.labelKantong(h.k)) + '</b>' + nonaktif +
+            '<span style="font-family:var(--num);font-weight:600;color:' + (sisa < 0 ? 'var(--merah)' : 'inherit') + '">' + U.fmtRp(sisa) + '</span></div>' +
+            '<div style="font-size:12px;color:var(--kabur);margin-top:2px">Tersedia ' + U.fmtRp(tersedia) +
+            (pos.otomatis ? ' (awal otomatis)' : ' (awal manual)') +
+            ' · terpakai ' + U.fmtRp(pos.pakai) + ' (' + pct + '%)</div>' +
+            '<div class="ukur"><i class="' + kls + '" style="width:' + pct + '%"></i></div></div>';
+        }).join('');
+      });
     },
 
     renderTopup: function () {
-      var h = U.el('sdDana').value, b = U.el('sdBulan').value;
+      var unitId = U.el('sdUnit').value, b = U.el('sdBulan').value;
       var w = U.el('daftarTopup');
-      if (!h || !b) { w.innerHTML = '<div class="kosong">Pilih dana dan periode</div>'; return Promise.resolve(); }
-      return DB.get('saldo', M.kunciSaldo(h, b)).then(function (s) {
+      var k = unitId ? M.kantongAktif(unitId) : null;
+      if (!k || !b) { w.innerHTML = '<div class="kosong">Pilih unit dan periode</div>'; return Promise.resolve(); }
+      return DB.get('saldo', M.kunciSaldo(k.id, b)).catch(function () { return null; }).then(function (s) {
         var tp = (s && s.topups) || [];
-        if (!tp.length) { w.innerHTML = '<div class="kosong">Belum ada top-up periode ini</div>'; return; }
+        if (!tp.length) { w.innerHTML = '<div class="kosong">Belum ada dana masuk periode ini</div>'; return; }
         return DB.semua('photos').then(function (fotos) {
           var jml = {};
           fotos.forEach(function (p) { if (p.refTipe === 'topup') jml[p.fillId] = (jml[p.fillId] || 0) + 1; });
           w.innerHTML = tp.slice().reverse().map(function (t) {
             var n = jml[t.id] || 0;
+            var tag = t.jenis === 'mutasiKeluar' ? '<span class="tag awas">mutasi keluar</span>'
+              : t.jenis === 'mutasiMasuk' ? '<span class="tag ok">mutasi masuk</span>' : '';
+            var nilaiTampil = (t.nilai < 0 ? '\u2212' : '') + U.fmtRp(Math.abs(t.nilai));
             return '<div class="trx" data-topup="' + t.id + '">' +
-              '<div class="isi"><div class="atas"><span class="unit">' + U.fmtRp(t.nilai) + '</span>' +
-              (n ? '<span class="tag ok">' + n + ' bukti</span>' : '<span class="tag awas">tanpa bukti</span>') + '</div>' +
-              '<div class="bwh">' + U.fmtTgl(t.tgl) + (t.ket ? ' \u00B7 ' + U.esc(t.ket) : '') + '</div></div></div>';
+              '<div class="isi"><div class="atas"><span class="unit">' + nilaiTampil + '</span>' + tag +
+              (t.jenis !== 'mutasiKeluar' && t.jenis !== 'mutasiMasuk'
+                ? (n ? '<span class="tag ok">' + n + ' bukti</span>' : '<span class="tag awas">tanpa bukti</span>') : '') +
+              '</div>' +
+              '<div class="bwh">' + U.fmtTgl(t.tgl) + (t.ket ? ' \u00B7 ' + U.esc(t.ket) : '') +
+              (t.pengirim ? ' \u00B7 dari ' + U.esc(t.pengirim) : '') + '</div></div></div>';
           }).join('');
           w.querySelectorAll('[data-topup]').forEach(function (r) {
-            r.addEventListener('click', function () { M.bukaTopup(h, b, r.dataset.topup); });
+            r.addEventListener('click', function () { M.bukaTopup(k.id, b, r.dataset.topup); });
           });
         });
       });
     },
 
-    hapusTopup: function () {
-      var h = U.el('sdDana').value, b = U.el('sdBulan').value, id = U.el('tuId').value;
-      if (!confirm('Hapus catatan top-up ini beserta buktinya?')) return;
-      Foto.milik(id).then(function (fs) {
-        return Promise.all(fs.map(function (f) { return DB.hapus('photos', f.id); }));
-      }).then(function () {
-        return DB.get('saldo', M.kunciSaldo(h, b));
-      }).then(function (s) {
-        s.topups = (s.topups || []).filter(function (t) { return t.id !== id; });
-        return DB.put('saldo', s);
-      }).then(function () {
-        App.tutupLembar('lembarTopup');
-        M.renderSaldo();
-        App.pesan('Top-up dihapus');
+    migrasiKeKantong: function () {
+      return DB.cfgAmbil('migrasiKantongV2', false).then(function (sudah) {
+        if (sudah) return false;
+        return DB.semua('fills').then(function (fills) {
+          if (!fills.length) return DB.cfgSimpan('migrasiKantongV2', true).then(function () { return false; });
+
+          var perlu = fills.some(function (f) { return f.holder !== undefined && f.kantongId === undefined; });
+          if (!perlu) return DB.cfgSimpan('migrasiKantongV2', true).then(function () { return false; });
+
+          var grup = {};
+          fills.forEach(function (f) {
+            if (f.kantongId) return;
+            var kk = f.unitId + '\u241F' + (f.holder || f.unitId);
+            if (!grup[kk]) grup[kk] = { unitId: f.unitId, holderLama: f.holder || f.unitId, fills: [] };
+            grup[kk].fills.push(f);
+          });
+
+          return DB.semua('holders').then(function (holdersLama) {
+            var petaNama = {};
+            holdersLama.forEach(function (h) { petaNama[h.id] = h.nama; });
+
+            var kantongBaru = [];
+            var petaKunciKeKantong = {};
+            Object.keys(grup).forEach(function (kk) {
+              var g = grup[kk];
+              var tglMulai = g.fills.reduce(function (min, f) { return !min || f.tgl < min ? f.tgl : min; }, null);
+              var k = {
+                id: U.uid('K'), unitId: g.unitId,
+                namaHolder: petaNama[g.holderLama] || (g.holderLama === g.unitId ? '' : g.holderLama),
+                mulai: tglMulai || U.hariIni(), aktif: false, dariKantong: null, createdAt: Date.now()
+              };
+              kantongBaru.push(k);
+              petaKunciKeKantong[kk] = k;
+            });
+
+            var terbaruPerUnit = {};
+            Object.keys(petaKunciKeKantong).forEach(function (kk) {
+              var g = grup[kk], k = petaKunciKeKantong[kk];
+              var tglTerbaru = g.fills.reduce(function (mx, f) { return f.tgl > mx ? f.tgl : mx; }, '0000-00-00');
+              if (!terbaruPerUnit[g.unitId] || tglTerbaru > terbaruPerUnit[g.unitId].tgl) {
+                terbaruPerUnit[g.unitId] = { tgl: tglTerbaru, kantong: k };
+              }
+            });
+            Object.keys(terbaruPerUnit).forEach(function (uid) { terbaruPerUnit[uid].kantong.aktif = true; });
+
+            return DB.semua('units').then(function (units) {
+              units.forEach(function (u) {
+                if (!terbaruPerUnit[u.id]) {
+                  var k = { id: U.uid('K'), unitId: u.id, namaHolder: petaNama[u.id] || '',
+                            mulai: U.hariIni(), aktif: true, dariKantong: null, createdAt: Date.now() };
+                  kantongBaru.push(k);
+                }
+              });
+
+              fills.forEach(function (f) {
+                if (f.kantongId) return;
+                var kk = f.unitId + '\u241F' + (f.holder || f.unitId);
+                var k = petaKunciKeKantong[kk];
+                if (k) f.kantongId = k.id;
+              });
+
+              return DB.semua('saldo').then(function (saldoLama) {
+                var saldoBaru = [];
+                saldoLama.forEach(function (s) {
+                  if (s.kantongId) { saldoBaru.push(s); return; }
+                  var kandidat = Object.keys(petaKunciKeKantong).filter(function (kk) {
+                    return grup[kk].holderLama === s.holder;
+                  });
+                  var kantongTarget = null;
+                  if (kandidat.length === 1) {
+                    kantongTarget = petaKunciKeKantong[kandidat[0]];
+                  } else if (kandidat.length > 1) {
+                    var cocok = kandidat.find(function (kk) {
+                      return grup[kk].fills.some(function (f) { return f.bulan === s.bulan; });
+                    });
+                    kantongTarget = petaKunciKeKantong[cocok || kandidat[0]];
+                  }
+                  if (!kantongTarget) return;
+                  saldoBaru.push({
+                    id: kantongTarget.id + '|' + s.bulan, kantongId: kantongTarget.id, bulan: s.bulan,
+                    saldoAwal: s.saldoAwal || 0, saldoAwalManual: (s.saldoAwal || 0) > 0,
+                    topups: s.topups || []
+                  });
+                });
+
+                return DB.putBanyak('kantong', kantongBaru)
+                  .then(function () { return DB.putBanyak('fills', fills); })
+                  .then(function () { return saldoBaru.length ? DB.putBanyak('saldo', saldoBaru) : null; })
+                  .then(function () { return DB.cfgSimpan('migrasiKantongV2', true); })
+                  .then(function () { return true; });
+              });
+            });
+          });
+        });
       });
     }
   };
@@ -2119,6 +2497,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         U.el(id).addEventListener('input', In.hitung);
       });
       U.el('inUnit').addEventListener('change', In.gantiUnit);
+      U.el('inDanaUnit').addEventListener('change', In.tampilKantong);
       U.el('inFoto').addEventListener('change', function (e) {
         In.tambahFoto(e.target.files); e.target.value = '';
       });
@@ -2131,12 +2510,24 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     gantiUnit: function () {
       var id = U.el('inUnit').value;
       var u = Master.unit(id);
-      /* pemegang dana mengikuti pemegang aktif unit, kecuali pengguna sudah memilih sendiri */
-      if (id) U.el('inDana').value = Master.holderUntuk(id);
+      Master.isiSelectUnitLain(U.el('inDanaUnit'), id);
+      In.tampilKantong();
       if (u && !U.el('inDept').value) U.el('inDept').value = u.dept || '';
       In.isiJenisBbm(u ? u.bbmUtama : '');
       In.tampilKmTerakhir(id);
       In.hitung();
+    },
+
+    /* tampilkan kantong dana yang berlaku: unit sendiri, atau unit lain (Backup) */
+    tampilKantong: function () {
+      var unitId = U.el('inUnit').value;
+      var unitDana = U.el('inDanaUnit').value || unitId;
+      var info = U.el('inDanaInfo');
+      if (!unitId) { info.textContent = ''; return; }
+      var k = Master.kantongAktif(unitDana);
+      if (!k) { info.innerHTML = '<span style="color:var(--merah)">Unit ini belum punya kantong dana — tambahkan di tab Master</span>'; return; }
+      info.innerHTML = 'Dana: <b>' + U.esc(k.namaHolder || '(tanpa nama)') + '</b>' +
+        (unitDana !== unitId ? ' — dana unit ' + U.esc(unitDana) + ' (Backup)' : '');
     },
 
     isiJenisBbm: function (bbmUtama) {
@@ -2238,10 +2629,13 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     },
 
     validasi: function () {
+      var unitId = U.el('inUnit').value;
+      var unitDana = U.el('inDanaUnit').value || unitId;
+      var kantong = unitId ? Master.kantongAktif(unitDana) : null;
       var d = {
         tgl: U.el('inTgl').value,
-        unitId: U.el('inUnit').value,
-        holder: U.el('inDana').value,
+        unitId: unitId,
+        kantongId: kantong ? kantong.id : '',
         km: U.parseNum(U.el('inKm').value),
         qty: U.parseNum(U.el('inQty').value),
         nilai: U.parseNum(U.el('inNilai').value),
@@ -2253,11 +2647,11 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       var salah = [];
       if (!d.tgl) salah.push('inTgl');
       if (!d.unitId) salah.push('inUnit');
-      if (!d.holder) salah.push('inDana');
+      if (!d.kantongId) return App.pesan('Unit ini belum punya kantong dana — tambahkan di tab Master', true) || null;
       if (d.qty <= 0) salah.push('inQty');
       if (d.nilai <= 0) salah.push('inNilai');
 
-      ['inTgl', 'inUnit', 'inDana', 'inQty', 'inNilai'].forEach(function (id) {
+      ['inTgl', 'inUnit', 'inQty', 'inNilai'].forEach(function (id) {
         U.el(id).classList.toggle('salah', salah.indexOf(id) > -1);
       });
       if (salah.length) { App.pesan('Lengkapi isian bertanda merah', true); return null; }
@@ -2275,8 +2669,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         tgl: d.tgl,
         bulan: U.bulanDari(d.tgl),
         unitId: d.unitId,
-        holder: d.holder,
-        grup: d.holder + '|' + d.unitId + '|' + U.bulanDari(d.tgl),
+        kantongId: d.kantongId,
         km: d.km,
         qty: d.qty,
         nilai: d.nilai,
@@ -2295,7 +2688,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         return f;
       });
 
-      DB.put('fills', fill)
+      return DB.put('fills', fill)
         .then(function () { return fotos.length ? DB.putBanyak('photos', fotos) : null; })
         .then(function () {
           App.pesan('Tersimpan · ' + U.fmtL(d.qty) + ' · ' + U.fmtRp(d.nilai));
@@ -2317,11 +2710,13 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       });
       if (!pertahankanTanggal) {
         U.el('inTgl').value = U.hariIni();
-        U.el('inUnit').value = ''; U.el('inDana').value = '';
+        U.el('inUnit').value = ''; U.el('inDanaUnit').value = '';
+        U.el('inDanaInfo').textContent = '';
         In.isiJenisBbm('');
         In._kmLalu = null; U.el('kmSebelum').textContent = '';
       } else {
         In.tampilKmTerakhir(U.el('inUnit').value);
+        In.tampilKantong();
       }
       In.hitung();
     }
@@ -2348,19 +2743,24 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       U.el('ubFoto').addEventListener('change', function (e) {
         D.tambahFotoUbah(e.target.files); e.target.value = '';
       });
+      U.el('ubUnit').addEventListener('change', function () {
+        Master.isiSelectUnitLain(U.el('ubDanaUnit'), U.el('ubUnit').value);
+        D.tampilKantongUbah();
+      });
+      U.el('ubDanaUnit').addEventListener('change', D.tampilKantongUbah);
       U.el('tblSimpanUbah').addEventListener('click', D.simpanUbah);
       U.el('tblHapusTrx').addEventListener('click', D.hapusTrx);
     },
 
     render: function () {
       var bulan = U.el('flBulan').value;
-      var dana = U.el('flDana').value;
+      var kantongId = U.el('flDana').value;
       var unit = U.el('flUnit').value;
 
       return DB.fillsAktif().then(function (semua) {
         var f = semua.filter(function (x) {
           return (!bulan || x.bulan === bulan) &&
-                 (!dana || x.holder === dana) &&
+                 (!kantongId || x.kantongId === kantongId) &&
                  (!unit || x.unitId === unit);
         }).reverse();
 
@@ -2384,10 +2784,12 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           wadah.innerHTML = f.map(function (x) {
             var p = x.tgl.split('-');
             var nf = jml[x.id] || 0;
+            var k = Master.kantongById(x.kantongId);
+            var backup = k && k.unitId !== x.unitId;
             return '<div class="trx" data-trx="' + x.id + '">' +
               '<div class="tgl"><b>' + p[2] + '</b><span>' + (U.BULAN_S[+p[1] - 1] || '') + '</span></div>' +
               '<div class="isi"><div class="atas"><span class="unit">' + U.esc(x.unitId) + '</span>' +
-              (x.holder !== x.unitId ? '<span class="tag awas">dana ' + U.esc(x.holder) + '</span>' : '') +
+              (backup ? '<span class="tag awas">dana ' + U.esc(k.unitId) + '</span>' : '') +
               (nf ? '' : '<span class="tag awas">tanpa foto</span>') + '</div>' +
               '<div class="bwh">' + U.fmtNum(x.hargaL, 0) + ' Rp/L' +
               (x.km ? ' · ' + U.fmtNum(x.km, 0) + ' km' : '') +
@@ -2406,10 +2808,10 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     },
 
     buka: function (id) {
-      DB.get('fills', id).then(function (f) {
+      return DB.get('fills', id).then(function (f) {
         if (!f) return;
         Master.isiSelectUnit(U.el('ubUnit'));
-        Master.isiSelectHolder(U.el('ubDana'));
+        Master.isiSelectUnitLain(U.el('ubDanaUnit'), f.unitId);
         var u = Master.unit(f.unitId);
         var opsi = U.JENIS_BBM[u ? u.bbmUtama : ''] || [];
         U.el('ubJenisBbm').innerHTML = opsi.map(function (o) {
@@ -2418,7 +2820,9 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         U.el('ubId').value = f.id;
         U.el('ubTgl').value = f.tgl;
         U.el('ubUnit').value = f.unitId;
-        U.el('ubDana').value = f.holder;
+        var kantong = Master.kantongById(f.kantongId);
+        U.el('ubDanaUnit').value = (kantong && kantong.unitId !== f.unitId) ? kantong.unitId : '';
+        D.tampilKantongUbah();
         U.el('ubKm').value = f.km || '';
         U.el('ubQty').value = U.fmtNum(f.qty, 2);
         U.el('ubNilai').value = f.nilai || '';
@@ -2503,20 +2907,29 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       });
     },
 
+    tampilKantongUbah: function () {
+      var unitId = U.el('ubUnit').value;
+      var unitDana = U.el('ubDanaUnit').value || unitId;
+      var k = unitId ? Master.kantongAktif(unitDana) : null;
+      U.el('ubDanaInfo').innerHTML = !unitId ? '' : (k
+        ? 'Dana: <b>' + U.esc(k.namaHolder || '(tanpa nama)') + '</b>' + (unitDana !== unitId ? ' — dana unit ' + U.esc(unitDana) + ' (Backup)' : '')
+        : '<span style="color:var(--merah)">Unit ini belum punya kantong dana</span>');
+    },
+
     simpanUbah: function () {
       var id = U.el('ubId').value;
       var tgl = U.el('ubTgl').value;
       var unitId = U.el('ubUnit').value;
-      var holder = U.el('ubDana').value;
+      var unitDana = U.el('ubDanaUnit').value || unitId;
+      var kantong = unitId ? Master.kantongAktif(unitDana) : null;
       var qty = U.parseNum(U.el('ubQty').value);
       var nilai = U.parseNum(U.el('ubNilai').value);
-      if (!tgl || !unitId || !holder || qty <= 0 || nilai <= 0) {
-        return App.pesan('Tanggal, unit, dana, QTY, dan nilai wajib diisi', true);
+      if (!tgl || !unitId || !kantong || qty <= 0 || nilai <= 0) {
+        return App.pesan('Tanggal, unit (dengan kantong dana), QTY, dan nilai wajib diisi', true);
       }
       DB.get('fills', id).then(function (f) {
         f.tgl = tgl; f.bulan = U.bulanDari(tgl);
-        f.unitId = unitId; f.holder = holder;
-        f.grup = holder + '|' + unitId + '|' + f.bulan;
+        f.unitId = unitId; f.kantongId = kantong.id;
         f.km = U.parseNum(U.el('ubKm').value);
         f.qty = qty; f.nilai = nilai;
         f.hargaL = nilai / qty;
@@ -2542,7 +2955,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     hapusTrx: function () {
       var id = U.el('ubId').value;
       if (!confirm('Hapus pengisian ini? Foto yang menyertainya ikut terhapus.')) return;
-      Foto.milik(id).then(function (fs) {
+      return Foto.milik(id).then(function (fs) {
         return Promise.all(fs.map(function (f) { return DB.hapus('photos', f.id); }));
       }).then(function () {
         return DB.get('fills', id).then(function (f) {
@@ -2576,7 +2989,10 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       U.el('tblBuatPdf').addEventListener('click', L.buatPdf);
     },
 
-    /* kumpulkan grup laporan untuk satu bulan */
+    /* kumpulkan grup laporan untuk satu bulan — satu grup = satu kantong dana
+       yang bertransaksi di bulan itu. Kantong lama dan baru hasil transfer
+       SELALU jadi laporan terpisah walau unit & bulan sama, karena
+       identitasnya memang berbeda. */
     kumpulkan: function (bulan) {
       return Promise.all([
         DB.cariIndex('fills', 'bulan', bulan),
@@ -2591,9 +3007,16 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
         var peta = {};
         fills.forEach(function (f) {
-          var k = f.holder + '|' + f.unitId;
+          var k = f.kantongId;
+          if (!k) return;   /* jejak lama tanpa kantongId, seharusnya sudah dimigrasi */
           if (!peta[k]) {
-            peta[k] = { kunci: k, holder: f.holder, unitId: f.unitId, bulan: bulan, fills: [], fotos: [] };
+            var kantong = Master.kantongById(k);
+            peta[k] = {
+              kunci: k, kantongId: k,
+              holder: kantong ? (kantong.namaHolder || '(tanpa nama)') : '(kantong terhapus)',
+              unitId: kantong ? kantong.unitId : f.unitId,
+              bulan: bulan, fills: [], fotos: []
+            };
           }
           peta[k].fills.push(f);
         });
@@ -2610,20 +3033,23 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           g.totalQty = g.fills.reduce(function (a, x) { return a + x.qty; }, 0);
           g.totalNilai = g.fills.reduce(function (a, x) { return a + x.nilai; }, 0);
           g.jmlTrx = g.fills.length;
+          g.jmlBackup = g.fills.filter(function (f) { return f.unitId !== g.unitId; }).length;
           g.tanpaNota = g.fills.filter(function (f) {
             return !(petaFoto[f.id] || []).some(function (p) { return p.jenis === 'Nota'; });
           }).length;
           g.fotoKosong = g.fotos.filter(function (x) { return x.foto.status === 'KOSONG'; }).length;
 
-          /* jarak & konsumsi berdasarkan selisih KM berurutan */
+          /* jarak & konsumsi berdasarkan selisih KM berurutan — hanya dari
+             transaksi unit fisik yang sama dengan pemilik kantong, supaya
+             tidak tercampur dengan odometer unit lain saat Backup */
+          var fillsUnitSendiri = g.fills.filter(function (f) { return f.unitId === g.unitId; });
           var kmAwal = 0, kmAkhir = 0;
-          var berKm = g.fills.filter(function (f) { return f.km > 0; });
+          var berKm = fillsUnitSendiri.filter(function (f) { return f.km > 0; });
           if (berKm.length >= 2) {
             kmAwal = berKm[0].km; kmAkhir = berKm[berKm.length - 1].km;
           }
           g.kmAwal = kmAwal; g.kmAkhir = kmAkhir;
           g.jarak = kmAkhir > kmAwal ? kmAkhir - kmAwal : 0;
-          /* liter yang dipakai menempuh jarak itu = total dikurangi pengisian pertama */
           var literJalan = berKm.length >= 2
             ? berKm.slice(1).reduce(function (a, x) { return a + x.qty; }, 0) : 0;
           g.kml = (g.jarak > 0 && literJalan > 0) ? g.jarak / literJalan : 0;
@@ -2753,8 +3179,14 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     doc.text(bersih(s), x, y, opsi);
   }
 
+  /* Kode ringkas dan aman untuk nama berkas/dokumen: huruf nama pemegang
+     disederhanakan, tidak boleh mengandung spasi atau karakter aneh */
+  function kodeAman(s) {
+    return String(s || '').toUpperCase().replace(/[^A-Z0-9]+/g, '').slice(0, 12) || 'DANA';
+  }
+
   function noDokumen(g) {
-    return 'BBM/' + g.holder + '/' + g.unitId + '/' + g.bulan.replace('-', '');
+    return 'BBM/' + g.unitId + '/' + kodeAman(g.holder) + '/' + g.bulan.replace('-', '');
   }
 
   function PDF_buat(g, layout) {
@@ -2762,7 +3194,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     if (!jsPDF) return Promise.reject(new Error('Pustaka PDF tidak termuat'));
 
     return Promise.all([
-      Master.posisiDana(g.holder, g.bulan),
+      Master.posisiDana(g.kantongId, g.bulan),
       DB.semua('config'),
       DB.cariIndex('photos', 'bulan', g.bulan)
     ]).then(function (r) {
@@ -2777,9 +3209,8 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
       var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
       var unit = Master.unit(g.unitId) || {};
-      var namaHolder = Master.namaHolder(g.holder);
 
-      var y = kepala(doc, g, cfg, unit, namaHolder);
+      var y = kepala(doc, g, cfg, unit);
       y = ringkasan(doc, g, y);
       y = rekonsiliasi(doc, g, dana, y, fotoTopup);
       y = rincian(doc, g, y);
@@ -2795,7 +3226,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
       return tugas.then(function () {
         kaki(doc, g, cfg);
-        var nama = 'Laporan-BBM_' + g.holder + '_' + g.unitId + '_' + g.bulan + '.pdf';
+        var nama = 'Laporan-BBM_' + g.unitId + '_' + kodeAman(g.holder) + '_' + g.bulan + '.pdf';
         doc.save(nama);
         return nama;
       });
@@ -2803,7 +3234,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
   }
 
   /* ─────────── kepala ─────────── */
-  function kepala(doc, g, cfg, unit, namaHolder) {
+  function kepala(doc, g, cfg, unit) {
     doc.setFillColor.apply(doc, WARNA.slab);
     doc.rect(0, 0, LEBAR, 32, 'F');
     doc.setFillColor.apply(doc, WARNA.solar);
@@ -2823,14 +3254,14 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     var y = 45;
     doc.setTextColor.apply(doc, WARNA.tinta);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
-    txt(doc, 'Dana ' + g.holder + '  \u00D7  Unit ' + g.unitId, MG, y);
+    txt(doc, 'Unit ' + g.unitId + '  \u00D7  Dana ' + g.holder, MG, y);
 
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
     doc.setTextColor.apply(doc, WARNA.kabur);
     var rincianUnit = [
       'Periode ' + U.fmtBulan(g.bulan),
-      namaHolder !== g.holder ? 'Pemegang: ' + namaHolder : '',
-      unit.no || '', unit.merek || '', unit.dept || ''
+      unit.no || '', unit.merek || '', unit.dept || '',
+      g.jmlBackup ? g.jmlBackup + ' transaksi dari unit lain (Backup)' : ''
     ].filter(Boolean).join('   |   ');
     txt(doc, rincianUnit, MG, y + 6);
 
@@ -2892,9 +3323,13 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       var kode = 'TU-' + String(i + 1).padStart(3, '0');
       (refTopup[x.topup.id] = refTopup[x.topup.id] || []).push(kode);
     });
-    var barisTopup = (dana.topups || []).length
-      ? 'Penambahan dana (' + dana.topups.length + 'x)' +
-        ((fotoTopup || []).length ? ' \u2014 bukti: ' +
+    var semuaTopup = dana.topups || [];
+    var jmlMutasi = semuaTopup.filter(function (t) { return t.jenis === 'mutasiKeluar' || t.jenis === 'mutasiMasuk'; }).length;
+    var labelTopup = jmlMutasi
+      ? 'Top-up & mutasi dana (' + semuaTopup.length + 'x, ' + jmlMutasi + ' mutasi)'
+      : 'Penambahan dana (' + semuaTopup.length + 'x)';
+    var barisTopup = semuaTopup.length
+      ? labelTopup + ((fotoTopup || []).length ? ' \u2014 bukti: ' +
           Object.keys(refTopup).map(function (k) { return refTopup[k].join(','); }).join(', ') : '')
       : 'Penambahan dana (0x)';
 
@@ -2944,6 +3379,10 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         kml = U.fmtNum((f.km - kmLalu) / f.qty, 1);
       }
       if (f.km > 0) kmLalu = f.km;
+      var ketTampil = bersih(f.ket || '');
+      if (f.unitId !== g.unitId) {
+        ketTampil = '[Unit ' + f.unitId + '] ' + ketTampil;
+      }
       return [
         i + 1,
         U.fmtTgl(f.tgl),
@@ -2953,7 +3392,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         U.fmtNum(f.nilai, 0),
         kml || '-',
         (refPerFill[f.id] || []).join(', ') || '-',
-        bersih(f.ket || '')
+        ketTampil
       ];
     });
     body.push([
@@ -3062,11 +3501,18 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           var ky = y0 + tata.tinggiGbr + 4.5;
           doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
           doc.setTextColor.apply(doc, WARNA.tinta);
-          txt(doc, kode + '   ' + U.fmtTgl(x.topup.tgl) + '   ' + U.fmtRp(x.topup.nilai), x0, ky);
+          txt(doc, kode + '   ' + U.fmtTgl(x.topup.tgl) + '   ' + U.fmtRp(Math.abs(x.topup.nilai)), x0, ky);
+          var baris2 = [x.topup.pengirim ? 'dari ' + x.topup.pengirim : '', x.topup.noRequest || '']
+            .filter(Boolean).join('   \u00B7   ');
+          if (baris2) {
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+            doc.setTextColor.apply(doc, WARNA.kabur);
+            txt(doc, baris2, x0, ky + 4);
+          }
           if (x.topup.ket) {
             doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
             doc.setTextColor.apply(doc, WARNA.kabur);
-            txt(doc, x.topup.ket, x0, ky + 4);
+            txt(doc, x.topup.ket, x0, baris2 ? ky + 8 : ky + 4);
           }
         });
       });
@@ -3271,7 +3717,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       tombol.innerHTML = '<span class="spin"></span> Menyiapkan';
 
       var fotos, fills = {}, topups = {};
-      DB.cariIndex('photos', 'bulan', bulan).then(function (f) {
+      return DB.cariIndex('photos', 'bulan', bulan).then(function (f) {
         fotos = f.filter(function (x) { return x.status !== 'KOSONG' && x.blob; });
         if (!fotos.length) throw new Error('Tidak ada foto yang bisa diarsipkan di periode ini');
         return DB.cariIndex('fills', 'bulan', bulan);
@@ -3294,7 +3740,8 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           daftar.push({
             fotoId: f.id, berkas: nama, fillId: f.fillId, refTipe: f.refTipe || 'pengisian',
             unitId: ref && f.refTipe !== 'topup' ? ref.unitId : '',
-            holder: ref && f.refTipe !== 'topup' ? ref.holder : '',
+            namaHolder: (ref && f.refTipe !== 'topup' && Master.kantongById(ref.kantongId))
+              ? Master.kantongById(ref.kantongId).namaHolder : '',
             tgl: ref ? ref.tgl : '', qty: ref && f.refTipe !== 'topup' ? ref.qty : 0,
             nilai: ref ? ref.nilai : 0,
             jenis: f.jenis, keterangan: f.keterangan,
@@ -3352,7 +3799,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       var bulan = U.el('arBulan').value;
       if (!bulan) return App.pesan('Pilih periode dulu', true);
 
-      DB.cariIndex('photos', 'bulan', bulan).then(function (f) {
+      return DB.cariIndex('photos', 'bulan', bulan).then(function (f) {
         var siap = f.filter(function (x) { return x.status === 'TERARSIP' && x.blob; });
         if (!siap.length) return App.pesan('Tidak ada foto berstatus terarsip di periode ini', true);
 
@@ -3386,8 +3833,8 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       tombol.innerHTML = '<span class="spin"></span> Menyiapkan';
 
       var isi = {};
-      var stores = ['units', 'holders', 'fills', 'saldo', 'arsip', 'config'];
-      Promise.all(stores.map(function (s) { return DB.semua(s); })).then(function (r) {
+      var stores = ['units', 'holders', 'kantong', 'fills', 'saldo', 'arsip', 'config'];
+      return Promise.all(stores.map(function (s) { return DB.semua(s); })).then(function (r) {
         stores.forEach(function (s, i) { isi[s] = r[i]; });
         return DB.semua('photos');
       }).then(function (fotos) {
@@ -3397,11 +3844,14 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         zip.file('data.json', JSON.stringify(isi, null, 2));
 
         /* rekap agar bisa dibuka di Excel / Numbers */
+        var petaKantong = {};
+        (isi.kantong || []).forEach(function (k) { petaKantong[k.id] = k; });
         var baris = ['Tanggal;ID Unit;Dana;KM;QTY (L);Nilai (Rp);Rp per L;Keterangan'];
         isi.fills.filter(function (f) { return !f.deleted; })
           .sort(function (a, b) { return a.tgl.localeCompare(b.tgl); })
           .forEach(function (f) {
-            baris.push([U.fmtTgl(f.tgl), f.unitId, f.holder, f.km || '',
+            var namaDana = (petaKantong[f.kantongId] && petaKantong[f.kantongId].namaHolder) || '';
+            baris.push([U.fmtTgl(f.tgl), f.unitId, namaDana, f.km || '',
               U.fmtNum(f.qty, 2), Math.round(f.nilai), Math.round(f.hargaL),
               (f.ket || '').replace(/;/g, ',')].join(';'));
           });
@@ -3496,7 +3946,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       return zip.file('data.json').async('string').then(function (s) {
         var d = JSON.parse(s);
         return DB.resetSemua().then(function () {
-          var tugas = ['units', 'holders', 'fills', 'saldo', 'arsip', 'config'].map(function (k) {
+          var tugas = ['units', 'holders', 'kantong', 'fills', 'saldo', 'arsip', 'config'].map(function (k) {
             return d[k] && d[k].length ? DB.putBanyak(k, d[k]) : Promise.resolve();
           });
           return Promise.all(tugas);
@@ -3549,12 +3999,16 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
   var ALIAS = {
     tgl:   ['tanggal', 'tgl', 'date', 'tanggalpengisian'],
     unit:  ['id', 'idunit', 'unit', 'unitno', 'nounit', 'nomorunit', 'kodeunit', 'nolambung'],
-    dana:  ['dana', 'sumberdana', 'kodedana', 'pemegangdana'],
+    dana:  ['dana', 'sumberdana', 'kodedana', 'pemegangdana', 'userid'],
     dana2: ['holderbbm', 'holderbbmlv', 'holderbbmlt'],
     km:    ['km', 'odometer', 'odo', 'kilometer', 'kmakhir', 'odometerkm', 'kmodometer'],
     qty:   ['qty', 'qtyl', 'volume', 'volumel', 'liter', 'vol', 'jumlahliter'],
-    nilai: ['nilai', 'nilairp', 'totalharga', 'totalhargarp', 'total', 'totalbiaya', 'rupiah', 'biaya'],
+    nilai: ['nilai', 'nilairp', 'totalharga', 'totalhargarp', 'total', 'totalbiaya', 'rupiah', 'biaya', 'jumlah'],
     ket:   ['keterangan', 'ket', 'catatan'],
+    pengirim: ['pengirim', 'dikirimoleh', 'sender'],
+    noRequest: ['norequest', 'nomorrequest', 'noreq', 'requestno', 'nomorpermintaan', 'nopermintaan'],
+    periode: ['periode', 'bulan', 'bulanperiode', 'periodebulan'],
+    saldoAwal: ['saldoawal', 'saldoawalperiode', 'saldoawalbulan', 'openingbalance'],
     dept:  ['departemen', 'departement', 'dept', 'divisi'],
     lokasi: ['lokasi', 'site', 'area', 'tempat'],
     jenisBbm: ['jenisbbm', 'produkbbm', 'jenisbahanbakar', 'bbm'],
@@ -3574,6 +4028,8 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
     km: 'KM', qty: 'QTY liter', nilai: 'Nilai', ket: 'Keterangan',
     dept: 'Departemen', lokasi: 'Lokasi', jenisBbm: 'Jenis BBM',
     operator: 'Operator (\u2192 dana)', pemegang: 'Pemegang unit (\u2192 dana)',
+    pengirim: 'Pengirim', noRequest: 'No Request',
+    periode: 'Periode', saldoAwal: 'Saldo Awal',
     tipe: 'Tipe', nopol: 'Nomor polisi', merek: 'Merek', bbmUtama: 'Bahan bakar utama', nama: 'Nama pemegang'
   };
 
@@ -3640,6 +4096,27 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       var idx = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'].indexOf(bln);
       if (idx < 0) idx = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(bln);
       if (idx > -1) return m[3] + '-' + U.pad(idx + 1) + '-' + U.pad(m[1]);
+    }
+    return '';
+  }
+
+  /* Periode/bulan bisa ditulis '2026-09', '09-2026', 'September 2026',
+     atau tanggal utuh (diambil bulannya saja). */
+  function baca_periode(v) {
+    if (v === null || v === undefined || v === '') return '';
+    var tgl = baca_tgl(v);
+    if (tgl) return tgl.slice(0, 7);
+    var s = String(v).trim();
+    var m = s.match(/^(\d{4})-(\d{1,2})$/);
+    if (m) return m[1] + '-' + U.pad(m[2]);
+    m = s.match(/^(\d{1,2})[-\/](\d{4})$/);
+    if (m) return m[2] + '-' + U.pad(m[1]);
+    m = s.match(/^([A-Za-z]{3,})\s+(\d{4})$/);
+    if (m) {
+      var bln = kunci(m[1]).slice(0, 3);
+      var idx = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'].indexOf(bln);
+      if (idx < 0) idx = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(bln);
+      if (idx > -1) return m[2] + '-' + U.pad(idx + 1);
     }
     return '';
   }
@@ -3724,6 +4201,8 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       var p = terbaik.peta;
       var jenis = (p.tgl !== undefined && p.qty !== undefined) ? 'pengisian'
                 : (p.unit !== undefined && (p.tipe !== undefined || p.nopol !== undefined || p.merek !== undefined || p.bbmUtama !== undefined)) ? 'unit'
+                : (p.periode !== undefined && p.saldoAwal !== undefined) ? 'saldoAwal'
+                : (p.tgl !== undefined && p.nilai !== undefined && p.qty === undefined && p.unit === undefined) ? 'danaMasuk'
                 : ((p.dana !== undefined || p.dana2 !== undefined) && p.nama !== undefined) ? 'dana'
                 : null;
       if (!jenis) return null;
@@ -3752,20 +4231,15 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         if (L.jenis === 'pengisian') {
           var tgl = baca_tgl(ambil(row, 'tgl'));
           var unit = U.normId(teks(ambil(row, 'unit')));
+          /* kandidat kolom dana: Dana > Dana (cadangan) > Operator/User —
+             yang pertama terisi dipakai, teks aslinya dipertahankan supaya
+             bisa dicocokkan sebagai kode UNIT atau sebagai nama pemegang */
           var danaMentah = teks(ambil(row, 'dana'));
-          /* aplikasi lama menulis "(sama dengan holder)" bila dana = holder */
-          var dana = kunci(danaMentah).indexOf('samadengan') > -1 ? '' : U.normId(danaMentah);
-          var dana2 = U.normId(teks(ambil(row, 'dana2')));
-          var operatorNama = teks(ambil(row, 'operator'));
+          if (kunci(danaMentah).indexOf('samadengan') > -1) danaMentah = '';
+          if (!danaMentah) danaMentah = teks(ambil(row, 'dana2'));
+          if (!danaMentah) danaMentah = teks(ambil(row, 'operator'));
           var qty = baca_angka(ambil(row, 'qty'));
           var nilai = baca_angka(ambil(row, 'nilai'));
-
-          /* Tidak ada kode dana sama sekali → coba cocokkan nama operator ke
-             Master Dana (operator dianggap pemegang dana). Kalau tidak ada
-             nama atau tidak cocok, jalankan() akan memakai ID unit sebagai
-             cadangan terakhir. */
-          var holderBelumPasti = !dana && !dana2;
-          if (!dana) dana = dana2 || (holderBelumPasti && operatorNama ? '' : unit);
 
           /* Baris tanpa satu pun kolom kunci bukan data yang rusak, melainkan
              catatan kaki atau baris pemisah. Dilewati diam-diam. */
@@ -3779,8 +4253,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
           if (salah.length) { tolak.push({ baris: noBaris, sebab: salah.join(', ') }); return; }
           sah.push({
-            baris: noBaris, tgl: tgl, unitId: unit, holder: dana,
-            operatorNama: holderBelumPasti ? operatorNama : '',
+            baris: noBaris, tgl: tgl, unitId: unit, danaMentah: danaMentah,
             km: baca_angka(ambil(row, 'km')), qty: qty, nilai: nilai,
             dept: teks(ambil(row, 'dept')), lokasi: teks(ambil(row, 'lokasi')),
             jenisBbm: teks(ambil(row, 'jenisBbm')),
@@ -3804,6 +4277,40 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
             bbmUtama: bbmU, pemegangNama: teks(ambil(row, 'pemegang'))
           });
 
+        } else if (L.jenis === 'saldoAwal') {
+          var bulanP = baca_periode(ambil(row, 'periode'));
+          var danaMentahS = teks(ambil(row, 'dana'));
+          var saldoAwalNilai = baca_angka(ambil(row, 'saldoAwal'));
+
+          if (!bulanP && !danaMentahS) return;                /* baris catatan */
+
+          var salahS = [];
+          if (!bulanP) salahS.push('periode tidak terbaca');
+          if (!danaMentahS) salahS.push('kolom Dana kosong');
+          if (saldoAwalNilai < 0) salahS.push('saldo awal tidak boleh negatif');
+          if (salahS.length) { tolak.push({ baris: noBaris, sebab: salahS.join(', ') }); return; }
+
+          sah.push({ baris: noBaris, bulan: bulanP, danaMentah: danaMentahS, saldoAwal: saldoAwalNilai });
+
+        } else if (L.jenis === 'danaMasuk') {
+          var tglM = baca_tgl(ambil(row, 'tgl'));
+          var danaMentahM = teks(ambil(row, 'dana'));
+          var nilaiM = baca_angka(ambil(row, 'nilai'));
+
+          if (!tglM && !danaMentahM && nilaiM <= 0) return;   /* baris catatan */
+
+          var salahM = [];
+          if (!tglM) salahM.push('tanggal tidak terbaca');
+          if (!danaMentahM) salahM.push('kolom Dana kosong');
+          if (nilaiM <= 0) salahM.push('Nilai kosong atau nol');
+          if (salahM.length) { tolak.push({ baris: noBaris, sebab: salahM.join(', ') }); return; }
+
+          sah.push({
+            baris: noBaris, tgl: tglM, danaMentah: danaMentahM,
+            nilai: nilaiM, ket: teks(ambil(row, 'ket')),
+            pengirim: teks(ambil(row, 'pengirim')), noRequest: teks(ambil(row, 'noRequest'))
+          });
+
         } else {
           var kode = U.normId(teks(ambil(row, 'dana')) || teks(ambil(row, 'dana2')));
           if (!kode && !teks(ambil(row, 'nama'))) return;    /* baris catatan */
@@ -3823,10 +4330,36 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         return L;
       });
 
-      return DB.fillsAktif().then(function (adaSekarang) {
+      return Promise.all([DB.fillsAktif(), DB.semua('saldo')]).then(function (r) {
+        var adaSekarang = r[0], saldoAda = r[1];
         var kunciAda = {};
         adaSekarang.forEach(function (f) {
           kunciAda[f.tgl + '|' + f.unitId + '|' + f.qty.toFixed(2) + '|' + Math.round(f.nilai)] = true;
+        });
+
+        /* dedup Dana Masuk: cocokkan lewat kode unit ATAU nama pemegang
+           kantong-nya, karena kolom Dana di berkas boleh berisi salah satunya */
+        var kunciTopupAda = {};
+        saldoAda.forEach(function (s) {
+          var kt = Master.kantongById(s.kantongId);
+          var label = kt ? [kt.unitId, kt.namaHolder] : [];
+          (s.topups || []).forEach(function (t) {
+            label.forEach(function (l) {
+              kunciTopupAda[kunci(l) + '|' + t.tgl + '|' + Math.round(t.nilai)] = true;
+            });
+          });
+        });
+
+        /* dedup Saldo Awal: kunci = (unit/nama kantong) + bulan + nilai —
+           nilai sama persis dianggap sudah tercatat, nilai beda dianggap
+           pembaruan yang sah untuk diproses ulang */
+        var kunciSaldoAwalAda = {};
+        saldoAda.forEach(function (s) {
+          var kt = Master.kantongById(s.kantongId);
+          var label = kt ? [kt.unitId, kt.namaHolder] : [];
+          label.forEach(function (l) {
+            kunciSaldoAwalAda[kunci(l) + '|' + s.bulan + '|' + Math.round(s.saldoAwal || 0)] = true;
+          });
         });
 
         var html = '<div style="font-size:13px;color:var(--kabur);padding:12px 14px;border-bottom:1px solid var(--garis)">' +
@@ -3842,10 +4375,26 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
               if (kunciAda[k] || dilihat[k]) { r._dobel = true; dobel++; }
               else { dilihat[k] = true; baru++; }
             });
+          } else if (L.jenis === 'saldoAwal') {
+            var dilihatS = {};
+            h.sah.forEach(function (r) {
+              var k = kunci(r.danaMentah) + '|' + r.bulan + '|' + Math.round(r.saldoAwal);
+              if (kunciSaldoAwalAda[k] || dilihatS[k]) { r._dobel = true; dobel++; }
+              else { dilihatS[k] = true; baru++; }
+            });
+          } else if (L.jenis === 'danaMasuk') {
+            var dilihatM = {};
+            h.sah.forEach(function (r) {
+              var k = kunci(r.danaMentah) + '|' + r.tgl + '|' + Math.round(r.nilai);
+              if (kunciTopupAda[k] || dilihatM[k]) { r._dobel = true; dobel++; }
+              else { dilihatM[k] = true; baru++; }
+            });
           } else { baru = h.sah.length; }
 
           var judulJenis = L.jenis === 'pengisian' ? 'Pengisian BBM'
-                         : L.jenis === 'unit' ? 'Master unit' : 'Master pemegang dana';
+                         : L.jenis === 'unit' ? 'Master unit'
+                         : L.jenis === 'saldoAwal' ? 'Saldo awal'
+                         : L.jenis === 'danaMasuk' ? 'Dana masuk (top-up)' : 'Master pemegang dana';
 
           html += '<div style="padding:13px 14px;border-bottom:1px solid var(--garis)">' +
             '<label style="display:flex;gap:10px;align-items:flex-start">' +
@@ -3894,94 +4443,194 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       tombol.disabled = true;
       tombol.innerHTML = '<span class="spin"></span> Memasukkan data';
 
-      var unitBaru = {}, danaBaru = {}, fills = [], jmlLewat = 0;
+      var unitBaru = {};        /* id -> unit baru yang akan disimpan */
+      var kantongBaru = [];     /* kantong baru yang dibuat selama proses ini */
+      var fills = [];
+      var topupBaru = {};       /* kunci kantongId|bulan -> { kantongId, bulan, topups:[...] } */
+      var saldoAwalBaru = {};   /* kunci kantongId|bulan -> { kantongId, bulan, nilai } */
+      var jmlLewat = 0, jmlGagalDana = 0;
+      var catatanGagalDana = [];
 
-      /* peta nama -> kode dana, dipakai untuk mencocokkan kolom "User" dan
-         "Holder" yang berisi nama orang, bukan kode. Diisi dari data yang
-         sudah ada, lalu bertambah dari lembar Dana yang diimport. */
-      var namaKeKode = {};
-      Master.holders.forEach(function (h) {
-        if (h.nama) namaKeKode[kunci(h.nama)] = h.id;
-      });
-      function cariAtauBuatKode(nama, idCadangan) {
-        var k = kunci(nama);
-        if (!k) return idCadangan;
-        if (namaKeKode[k]) return namaKeKode[k];
-        /* nama belum dikenal → buat pemegang dana baru, kodenya memakai
-           ID unit sebagai cadangan terakhir supaya tidak tabrakan */
-        if (!Master.holder(idCadangan) && !danaBaru[idCadangan]) {
-          danaBaru[idCadangan] = { id: idCadangan, nama: nama, aktif: true, createdAt: Date.now() };
-        } else if (danaBaru[idCadangan] && !danaBaru[idCadangan].nama) {
-          danaBaru[idCadangan].nama = nama;
+      /* peta nama -> id, dipakai memperbarui direktori nama (BUKAN identitas
+         dana lagi — cuma supaya nama tersimpan konsisten kalau dipakai lagi) */
+      var namaKeIdDirektori = {};
+      Master.holders.forEach(function (h) { if (h.nama) namaKeIdDirektori[kunci(h.nama)] = h.id; });
+
+      function kantongAktifSementara(unitId) {
+        for (var i = kantongBaru.length - 1; i >= 0; i--) {
+          if (kantongBaru[i].unitId === unitId && kantongBaru[i].aktif) return kantongBaru[i];
         }
-        namaKeKode[k] = idCadangan;
-        return idCadangan;
+        return Master.kantongAktif(unitId);
       }
 
-      /* urutan wajib: Dana dulu (isi peta nama), lalu Unit (boleh pakai
-         peta nama untuk Holder), baru Pengisian (boleh pakai peta nama
-         untuk kolom User, dan sudah tahu pemegang aktif tiap unit) */
-      var urutan = { dana: 0, unit: 1, pengisian: 2 };
+      function pastikanUnitAda(unitId, deptFallback) {
+        if (Master.unit(unitId) || unitBaru[unitId]) return;
+        unitBaru[unitId] = {
+          id: unitId, tipe: U.tebakTipe(unitId), no: '', merek: '',
+          dept: deptFallback || '', bbmUtama: 'Solar', aktif: true, createdAt: Date.now()
+        };
+      }
+
+      function buatKantongBaru(unitId, namaHolder, mulai) {
+        var k = {
+          id: U.uid('K'), unitId: unitId, namaHolder: (namaHolder || '').trim(),
+          mulai: mulai || U.hariIni(), aktif: true, dariKantong: null, createdAt: Date.now()
+        };
+        kantongBaru.push(k);
+        return k;
+      }
+
+      /* Cocokkan teks kolom Dana/User ID ke sebuah KANTONG. Diprioritaskan
+         sebagai kode unit dulu (kantong aktif unit itu), baru sebagai nama
+         pemegang kantong aktif (harus cocok tepat satu unit, kalau ambigu
+         atau tidak ketemu dan ada fallbackUnitId, jatuh ke kantong aktif
+         unit itu sendiri — dipakai untuk Pengisian). Untuk Dana Masuk/Saldo
+         Awal, fallbackUnitId dikosongkan supaya baris yang tidak jelas
+         kantongnya DITOLAK, bukan menebak. */
+      function resolveKantong(mentah, fallbackUnitId) {
+        var teksNilai = String(mentah || '').trim();
+        if (!teksNilai) {
+          return fallbackUnitId ? kantongAktifSementara(fallbackUnitId) : null;
+        }
+        var kode = U.normId(teksNilai);
+        var lewatKode = kode ? kantongAktifSementara(kode) : null;
+        if (lewatKode) return lewatKode;
+
+        var namaK = kunci(teksNilai);
+        if (namaK) {
+          var semuaAktif = Master.kantong.filter(function (k) { return k.aktif; })
+            .concat(kantongBaru.filter(function (k) { return k.aktif; }));
+          var petaUnit = {};
+          semuaAktif.forEach(function (k) {
+            if (kunci(k.namaHolder || '') === namaK) petaUnit[k.unitId] = k;   /* terbaru per unit menang */
+          });
+          var cocok = Object.keys(petaUnit).map(function (u) { return petaUnit[u]; });
+          if (cocok.length === 1) return cocok[0];
+        }
+        return fallbackUnitId ? kantongAktifSementara(fallbackUnitId) : null;
+      }
+
+      /* urutan wajib: Dana lama dulu (perbarui direktori nama), lalu Unit
+         (unit baru + kantong pertamanya), lalu Saldo Awal & Dana Masuk
+         (butuh unit/kantong sudah dikenal), baru Pengisian paling akhir */
+      var urutan = { dana: 0, unit: 1, saldoAwal: 2, danaMasuk: 3, pengisian: 4 };
       dipakai = dipakai.slice().sort(function (a, b) { return urutan[a.jenis] - urutan[b.jenis]; });
+
+      var direktoriBaru = {};   /* id -> {id, nama} untuk disimpan ke store holders */
 
       dipakai.forEach(function (L) {
         if (L.jenis === 'dana') {
           L.hasil.sah.forEach(function (r) {
-            danaBaru[r.id] = { id: r.id, nama: r.nama, aktif: true, createdAt: Date.now() };
-            if (r.nama) namaKeKode[kunci(r.nama)] = r.id;
+            if (r.nama) namaKeIdDirektori[kunci(r.nama)] = r.id;
+            var adaLama = Master.holder(r.id);
+            direktoriBaru[r.id] = { id: r.id, nama: r.nama, aktif: true, createdAt: adaLama ? adaLama.createdAt : Date.now() };
           });
 
         } else if (L.jenis === 'unit') {
           L.hasil.sah.forEach(function (r) {
-            var holderAktif = r.pemegangNama ? cariAtauBuatKode(r.pemegangNama, r.id) : '';
-            unitBaru[r.id] = {
-              id: r.id, tipe: r.tipe, no: r.no, merek: r.merek, dept: r.dept,
-              bbmUtama: r.bbmUtama || 'Solar', holderAktif: holderAktif,
-              riwayatPemegang: [], tangki: 0, aktif: true, createdAt: Date.now()
-            };
+            var sudahAda = Master.unit(r.id) || unitBaru[r.id];
+            if (!sudahAda) {
+              unitBaru[r.id] = {
+                id: r.id, tipe: r.tipe, no: r.no, merek: r.merek, dept: r.dept,
+                bbmUtama: r.bbmUtama || 'Solar', aktif: true, createdAt: Date.now()
+              };
+              /* unit baru: buat kantong pertamanya dari kolom Pemegang.
+                 Untuk unit yang SUDAH ADA, kolom Pemegang diabaikan —
+                 mengganti pemegang unit lama harus lewat Transfer Dana
+                 supaya sisa uangnya tercatat rapi, bukan diam-diam
+                 lewat import. */
+              buatKantongBaru(r.id, r.pemegangNama, U.hariIni());
+            }
           });
 
-        } else {
+        } else if (L.jenis === 'saldoAwal') {
           L.hasil.sah.forEach(function (r) {
             if (r._dobel) { jmlLewat++; return; }
-            var holder = r.holder;
-            if (!holder && r.operatorNama) {
-              holder = cariAtauBuatKode(r.operatorNama, r.unitId);
+            var k = resolveKantong(r.danaMentah, null);
+            if (!k) {
+              jmlGagalDana++;
+              catatanGagalDana.push('Saldo Awal baris ' + r.baris + ': "' + r.danaMentah + '" tidak cocok unit/pemegang manapun');
+              return;
             }
-            if (!holder) holder = (unitBaru[r.unitId] && unitBaru[r.unitId].holderAktif) ||
-                                   Master.holderUntuk(r.unitId) || r.unitId;
+            saldoAwalBaru[k.id + '|' + r.bulan] = { kantongId: k.id, bulan: r.bulan, nilai: r.saldoAwal };
+          });
+
+        } else if (L.jenis === 'danaMasuk') {
+          L.hasil.sah.forEach(function (r) {
+            if (r._dobel) { jmlLewat++; return; }
+            var k = resolveKantong(r.danaMentah, null);
+            if (!k) {
+              jmlGagalDana++;
+              catatanGagalDana.push('Dana Masuk baris ' + r.baris + ': "' + r.danaMentah + '" tidak cocok unit/pemegang manapun');
+              return;
+            }
+            var bulan = U.bulanDari(r.tgl);
+            var kk = k.id + '|' + bulan;
+            if (!topupBaru[kk]) topupBaru[kk] = { kantongId: k.id, bulan: bulan, topups: [] };
+            topupBaru[kk].topups.push({
+              id: U.uid('U'), tgl: r.tgl, nilai: r.nilai, ket: r.ket, jenis: 'topup',
+              pengirim: r.pengirim, noRequest: r.noRequest
+            });
+          });
+
+        } else if (L.jenis === 'pengisian') {
+          L.hasil.sah.forEach(function (r) {
+            if (r._dobel) { jmlLewat++; return; }
+            pastikanUnitAda(r.unitId, r.dept);
+            if (!kantongAktifSementara(r.unitId)) buatKantongBaru(r.unitId, '', r.tgl);
+
+            var k = resolveKantong(r.danaMentah, r.unitId);
+            if (!k) k = kantongAktifSementara(r.unitId);   /* jaring pengaman terakhir */
 
             var bulan = U.bulanDari(r.tgl);
             fills.push({
               id: U.uid('T'), tgl: r.tgl, bulan: bulan,
-              unitId: r.unitId, holder: holder,
-              grup: holder + '|' + r.unitId + '|' + bulan,
+              unitId: r.unitId, kantongId: k.id,
               km: r.km, qty: r.qty, nilai: r.nilai,
               hargaL: r.qty > 0 ? r.nilai / r.qty : 0,
               jenisBbm: r.jenisBbm, dept: r.dept, lokasi: r.lokasi,
               ket: r.ket, sumber: 'impor', deleted: false,
               createdAt: Date.now(), updatedAt: Date.now()
             });
-            /* unit & dana yang belum terdaftar dibuatkan otomatis */
-            if (!Master.unit(r.unitId) && !unitBaru[r.unitId]) {
-              unitBaru[r.unitId] = { id: r.unitId, tipe: U.tebakTipe(r.unitId), no: '',
-                                     merek: '', dept: r.dept || '', bbmUtama: 'Solar', holderAktif: '',
-                                     riwayatPemegang: [], tangki: 0, aktif: true, createdAt: Date.now() };
-            }
-            if (!Master.holder(holder) && !danaBaru[holder]) {
-              danaBaru[holder] = { id: holder, nama: '', aktif: true, createdAt: Date.now() };
-            }
           });
         }
       });
 
       var daftarUnit = Object.keys(unitBaru).map(function (k) { return unitBaru[k]; });
-      var daftarDana = Object.keys(danaBaru).map(function (k) { return danaBaru[k]; });
+      var daftarDirektori = Object.keys(direktoriBaru).map(function (k) { return direktoriBaru[k]; });
+      var kunciTopup = Object.keys(topupBaru);
+      var jmlTopup = kunciTopup.reduce(function (a, k) { return a + topupBaru[k].topups.length; }, 0);
+      var kunciSaldoAwal = Object.keys(saldoAwalBaru);
 
       Promise.resolve()
         .then(function () { return daftarUnit.length ? DB.putBanyak('units', daftarUnit) : null; })
-        .then(function () { return daftarDana.length ? DB.putBanyak('holders', daftarDana) : null; })
+        .then(function () { return daftarDirektori.length ? DB.putBanyak('holders', daftarDirektori) : null; })
+        .then(function () { return kantongBaru.length ? DB.putBanyak('kantong', kantongBaru) : null; })
         .then(function () { return fills.length ? DB.putBanyak('fills', fills) : null; })
+        .then(function () {
+          /* terapkan saldo awal (menimpa nilai lama kalau berbeda) */
+          return Promise.all(kunciSaldoAwal.map(function (kk) {
+            var r = saldoAwalBaru[kk];
+            var id = Master.kunciSaldo(r.kantongId, r.bulan);
+            return DB.get('saldo', id).catch(function () { return null; }).then(function (s) {
+              s = s || { id: id, kantongId: r.kantongId, bulan: r.bulan, topups: [] };
+              s.saldoAwal = r.nilai;
+              s.saldoAwalManual = true;
+              return DB.put('saldo', s);
+            });
+          }));
+        })
+        .then(function () {
+          /* gabungkan top-up baru ke dokumen saldo yang sudah ada (kalau ada) */
+          return Promise.all(kunciTopup.map(function (kk) {
+            var id = Master.kunciSaldo(topupBaru[kk].kantongId, topupBaru[kk].bulan);
+            return DB.get('saldo', id).catch(function () { return null; }).then(function (s) {
+              s = s || { id: id, kantongId: topupBaru[kk].kantongId, bulan: topupBaru[kk].bulan, topups: [] };
+              s.topups = (s.topups || []).concat(topupBaru[kk].topups);
+              return DB.put('saldo', s);
+            });
+          }));
+        })
         .then(Master.muat)
         .then(function () {
           U.el('kotakImpor').style.display = 'none';
@@ -3989,10 +4638,17 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
           I.lembar = [];
           Master.render();
           App.segarkanSemua();
-          App.pesan(fills.length + ' pengisian masuk' +
+          var pesan = fills.length + ' pengisian masuk' +
+            (jmlTopup ? ', ' + jmlTopup + ' dana masuk' : '') +
+            (kunciSaldoAwal.length ? ', ' + kunciSaldoAwal.length + ' saldo awal' : '') +
             (daftarUnit.length ? ', ' + daftarUnit.length + ' unit' : '') +
-            (daftarDana.length ? ', ' + daftarDana.length + ' dana' : '') +
-            (jmlLewat ? ', ' + jmlLewat + ' dilewati' : ''));
+            (kantongBaru.length ? ', ' + kantongBaru.length + ' kantong baru' : '') +
+            (jmlLewat ? ', ' + jmlLewat + ' dilewati' : '');
+          if (jmlGagalDana) {
+            pesan += '. ' + jmlGagalDana + ' baris Dana Masuk/Saldo Awal DITOLAK karena kolom Dana tidak cocok unit/pemegang manapun.';
+            console.warn('Baris ditolak karena Dana tidak cocok:', catatanGagalDana);
+          }
+          App.pesan(pesan, !!jmlGagalDana);
         })
         .catch(function (e) { App.pesan('Import gagal: ' + e.message, true); })
         .then(function () {
@@ -4052,11 +4708,20 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       XLSX.utils.book_append_sheet(wb, ws2, 'Unit');
 
       var ws3 = XLSX.utils.aoa_to_sheet([
-        ['Kode Dana', 'Nama Pemegang'],
-        ['LV11', 'Budi Santoso — baris contoh, hapus sebelum diisi']
+        ['Tanggal', 'User ID', 'Jumlah', 'Pengirim', 'No Request'],
+        ['01-09-2026', 'LV11', 3000000, 'Kasir Site', 'RQ-0091 — baris contoh, hapus sebelum diisi'],
+        ['15-09-2026', 'Budi Santoso', 2000000, 'Finance Pusat', 'RQ-0104 — boleh nama orang']
       ]);
-      ws3['!cols'] = [{ wch: 12 }, { wch: 46 }];
-      XLSX.utils.book_append_sheet(wb, ws3, 'Dana');
+      ws3['!cols'] = [{ wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 20 }, { wch: 20 }];
+      XLSX.utils.book_append_sheet(wb, ws3, 'Dana Masuk');
+
+      var ws5 = XLSX.utils.aoa_to_sheet([
+        ['Periode', 'User ID', 'Saldo Awal'],
+        ['2026-09', 'LV11', 5000000],
+        ['September 2026', 'Budi Santoso', 3000000]
+      ]);
+      ws5['!cols'] = [{ wch: 16 }, { wch: 16 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws5, 'Saldo Awal');
 
       var keluar = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
       var blob = new Blob([keluar], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -4135,11 +4800,11 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
     segarkanPilihan: function () {
       Master.isiSelectUnit(U.el('inUnit'));
-      Master.isiSelectHolder(U.el('inDana'));
+      Master.isiSelectUnitLain(U.el('inDanaUnit'), U.el('inUnit').value);
       Master.isiSelectUnit(U.el('flUnit'), 'Semua unit');
-      Master.isiSelectHolder(U.el('flDana'), 'Semua');
-      Master.isiSelectHolder(U.el('sdDana'), 'Pilih');
-      Master.isiSelectHolder(U.el('unHolder'), 'Sama dengan ID unit');
+      Master.isiSelectKantong(U.el('flDana'), 'Semua');
+      Master.isiSelectUnit(U.el('sdUnit'), 'Pilih');
+      Master.isiSelectUnit(U.el('tdUnit'), 'Pilih');
 
       return App.daftarBulan().then(function (bulan) {
         var opsi = bulan.map(function (b) {
@@ -4280,8 +4945,11 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
         e.target.value = '';
       });
       U.el('tblHapusTopup').addEventListener('click', Master.hapusTopup);
+      U.el('tblSimpanTopup').addEventListener('click', Master.simpanTopupEdit);
+      U.el('tblTransferDana').addEventListener('click', Master.transferDana);
+      U.el('tdTgl').value = U.hariIni();
       U.el('sdBulan').addEventListener('change', Master.renderSaldo);
-      U.el('sdDana').addEventListener('change', Master.renderSaldo);
+      U.el('sdUnit').addEventListener('change', Master.renderSaldo);
       U.el('tblSimpanCfg').addEventListener('click', App.simpanCfg);
       U.el('tpTgl').value = U.hariIni();
 
@@ -4312,6 +4980,10 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
       Input.siap(); Data.siap(); Laporan.siap(); Arsip.siap(); Impor.siap();
 
       return Master.muat()
+        .then(function () { return Master.migrasiKeKantong(); })
+        .then(function (migrasiJalan) {
+          if (migrasiJalan) return Master.muat();
+        })
         .then(App.muatCfg)
         .then(App.segarkanPilihan)
         .then(function () {
